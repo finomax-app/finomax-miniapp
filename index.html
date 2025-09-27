@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinoMax - Smart Investment Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 25%, #2d1b69 50%, #4c1d95 75%, #6b21a8 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 25%, #ffc107 50%, #ff9800 75%, #ff6f00 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pulse-gold {
+            animation: pulseGold 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGold {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+                transform: scale(1.05);
+            }
+        }
+        
+        .spinning {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .nav-btn.active {
+            color: #ffd700;
+            transform: scale(1.1);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .crypto-item {
+            transition: all 0.3s ease;
+        }
+
+        .crypto-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .price-up { color: #10b981; }
+        .price-down { color: #ef4444; }
+
+        .price-value {
+            transition: all 0.5s ease;
+        }
+
+        .price-change {
+            transition: all 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .rtl {
+            direction: rtl;
+        }
+
+        .rtl .notification {
+            right: auto;
+            left: 20px;
+            transform: translateX(-400px);
+        }
+
+        .rtl .notification.show {
+            transform: translateX(0);
+        }
+
+        .game-container {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dice-face {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin: 5px;
+        }
+
+        .lucky-wheel {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            position: relative;
+            margin: 20px auto;
+            transition: transform 3s ease-out;
+            border: 5px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .segment-1 { background: #ff6b6b; transform: rotate(0deg); }
+        .segment-2 { background: #4ecdc4; transform: rotate(60deg); }
+        .segment-3 { background: #45b7d1; transform: rotate(120deg); }
+        .segment-4 { background: #96ceb4; transform: rotate(180deg); }
+        .segment-5 { background: #feca57; transform: rotate(240deg); }
+        .segment-6 { background: #ff9ff3; transform: rotate(300deg); }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #ffd700;
+            z-index: 10;
+        }
+        
+        .wheel-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .slot-machine {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .slot-reel {
+            width: 80px;
+            height: 100px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            transition: all 0.5s ease;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card.red { color: #dc2626; }
+        .card.black { color: #1f2937; }
+        .card.selected { border: 3px solid #ffd700; }
+
+        .coin {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px auto;
+            transition: transform 1s ease;
+        }
+
+        .coin.flipping {
+            animation: coinFlip 1s ease-in-out;
+        }
+
+        @keyframes coinFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        .bet-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bet-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bet-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .bet-btn.selected {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffd700;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .roulette-wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #dc2626 0deg 18deg,
+                #1f2937 18deg 36deg,
+                #dc2626 36deg 54deg,
+                #1f2937 54deg 72deg,
+                #dc2626 72deg 90deg,
+                #1f2937 90deg 108deg,
+                #dc2626 108deg 126deg,
+                #1f2937 126deg 144deg,
+                #dc2626 144deg 162deg,
+                #1f2937 162deg 180deg,
+                #dc2626 180deg 198deg,
+                #1f2937 198deg 216deg,
+                #dc2626 216deg 234deg,
+                #1f2937 234deg 252deg,
+                #dc2626 252deg 270deg,
+                #1f2937 270deg 288deg,
+                #dc2626 288deg 306deg,
+                #1f2937 306deg 324deg,
+                #dc2626 324deg 342deg,
+                #1f2937 342deg 360deg
+            );
+            position: relative;
+            margin: 20px auto;
+            transition: transform 3s ease-out;
+        }
+
+        .roulette-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .roulette-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #ffd700;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <!-- Notification Container -->
+    <div id="notification" class="notification"></div>
+
+    <div id="app" class="min-h-screen">
+        <!-- Header -->
+        <div class="glass-effect p-4 border-b border-white/20">
+            <!-- Top Bar -->
+            <div class="flex items-center justify-between mb-4">
+                <!-- Language Selector -->
+                <div class="relative">
+                    <select id="languageSelector" class="bg-gray-800 border border-gray-600 rounded-lg px-3 py-1 text-sm text-white">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="zh">🇨🇳 中文</option>
+                        <option value="fa">🇮🇷 فارسی</option>
+                        <option value="ar">🇸🇦 العربية</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                        <option value="ru">🇷🇺 Русский</option>
+                        <option value="pt">🇧🇷 Português</option>
+                        <option value="hi">🇮🇳 हिंदी</option>
+                    </select>
+                </div>
+                
+                <!-- Settings -->
+                <div class="flex items-center gap-2">
+                    <button id="notificationBtn" class="relative p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all">
+                        🔔
+                        <span id="notificationDot" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Logo & Title -->
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-2xl gold-gradient flex items-center justify-center font-black text-3xl text-black shadow-2xl floating">
+                        F
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">FinoMax</h1>
+                        <p class="text-xs text-white/60" data-translate="smart_investment">Smart Investment Platform</p>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-white/80 mb-2" data-translate="welcome">Welcome dear user</p>
+                <div class="flex items-center justify-center gap-2">
+                    <div class="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-full text-xs font-bold">
+                        ⭐ <span data-translate="regular_user">Regular User</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Page -->
+        <div id="mainPage" class="p-6 space-y-6">
+            <!-- Balance Display -->
+            <div class="text-center">
+                <div class="glass-effect rounded-3xl p-8 mb-6">
+                    <p class="text-white/80 mb-3 text-lg" data-translate="balance">Your Balance</p>
+                    <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2" id="balance">0.000000</div>
+                    <p class="text-white/60 text-lg font-semibold">USDT</p>
+                    <div class="mt-4 flex items-center justify-center gap-2 text-sm">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-green-400" data-translate="live">Live</span>
+                    </div>
+                </div>
+                
+                <!-- Mining Circle -->
+                <div class="flex justify-center mb-8">
+                    <div class="relative">
+                        <div id="miningCircle" class="w-40 h-40 rounded-full gold-gradient flex items-center justify-center cursor-pointer pulse-gold transition-all duration-500 hover:scale-110 shadow-2xl">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor" class="text-black">
+                                <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center space-y-3">
+                    <p class="text-lg text-white/90 font-medium" id="miningStatus" data-translate="mining_status">Click to start mining</p>
+                    <div class="text-sm text-white/70 font-mono" id="miningTimer"></div>
+                    <div class="text-sm text-green-400 font-semibold" id="earningRate"></div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-4 bg-white/10 rounded-full h-3 w-64 mx-auto" id="progressContainer" style="display: none;">
+                        <div class="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 h-3 rounded-full transition-all duration-1000" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="text-sm text-white/70 mt-2" id="progressText"></div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-effect rounded-2xl p-6 text-center">
+                    <div class="text-3xl mb-2">💰</div>
+                    <div class="text-2xl font-bold text-green-400 mb-1" id="dailyEarnings">+0.000000</div>
+                    <p class="text-xs text-white/70" data-translate="daily_earnings">Today's Earnings</p>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 text-center">
+                    <div class="text-3xl mb-2">📈</div>
+                    <div class="text-2xl font-bold text-blue-400 mb-1" id="totalEarnings">0.000000</div>
+                    <p class="text-xs text-white/70" data-translate="total_earnings">Total Earnings</p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-3 gap-4">
+                <button id="walletBtn" class="glass-effect rounded-2xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-2xl mb-2">💎</div>
+                    <p class="text-sm font-semibold" data-translate="wallet">Wallet</p>
+                </button>
+                
+                <button id="gamesBtn" class="glass-effect rounded-2xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-2xl mb-2">🎮</div>
+                    <p class="text-sm font-semibold" data-translate="games">Games</p>
+                </button>
+
+                <button id="marketBtn" class="glass-effect rounded-2xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-2xl mb-2">📊</div>
+                    <p class="text-sm font-semibold" data-translate="market">Market</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Market Page -->
+        <div id="marketPage" class="p-6 hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold" data-translate="crypto_market">Crypto Market</h2>
+                <button id="refreshMarketBtn" class="bg-blue-600 px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-all">
+                    🔄 <span data-translate="refresh">Refresh</span>
+                </button>
+            </div>
+            
+            <!-- Market Stats -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <div class="text-sm text-gray-400 mb-1" data-translate="total_market">Total Market</div>
+                    <div class="text-xl font-bold text-green-400" id="totalMarketCap">$2.1T</div>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <div class="text-sm text-gray-400 mb-1" data-translate="volume_24h">24h Volume</div>
+                    <div class="text-xl font-bold text-blue-400" id="total24hVolume">$89.5B</div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="mb-4">
+                <input type="text" id="cryptoSearch" data-translate-placeholder="search_crypto" placeholder="Search cryptocurrency..." 
+                       class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+            </div>
+
+            <!-- Crypto List -->
+            <div id="cryptoList" class="space-y-2">
+                <!-- Crypto items will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Crypto Detail Modal -->
+        <div id="cryptoDetailModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="glass-effect rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div id="modalCoinIcon" class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">B</div>
+                            <div>
+                                <h3 id="modalCoinName" class="text-xl font-bold">Bitcoin</h3>
+                                <p id="modalCoinSymbol" class="text-gray-400">BTC</p>
+                            </div>
+                        </div>
+                        <button id="closeModalBtn" class="text-gray-400 hover:text-white text-2xl">×</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="text-center">
+                            <div id="modalCoinPrice" class="text-3xl font-bold mb-2">$43,250.67</div>
+                            <div id="modalCoinChange" class="text-lg price-up">+2.45%</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="text-gray-400 mb-1" data-translate="market_rank">Market Rank</div>
+                                <div id="modalCoinRank" class="font-bold">#1</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="text-gray-400 mb-1" data-translate="market_cap">Market Cap</div>
+                                <div id="modalCoinMarketCap" class="font-bold">$847.0B</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="text-gray-400 mb-1" data-translate="volume_24h">24h Volume</div>
+                                <div id="modalCoinVolume" class="font-bold">$28.5B</div>
+                            </div>
+                            <div class="bg-white/5 rounded-lg p-3">
+                                <div class="text-gray-400 mb-1" data-translate="circulating_supply">Circulating Supply</div>
+                                <div id="modalCoinSupply" class="font-bold">19.6M BTC</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/5 rounded-lg p-4">
+                            <h4 class="font-bold mb-3" data-translate="price_chart">Price Chart (7 days)</h4>
+                            <canvas id="priceChart" width="300" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Page -->
+        <div id="walletPage" class="p-6 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center" data-translate="wallet">Wallet</h2>
+            
+            <!-- Current Balance -->
+            <div class="glass-effect rounded-xl p-4 mb-6 text-center">
+                <p class="text-gray-300 mb-2" data-translate="current_balance">Current Balance</p>
+                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500" id="walletBalance">0.000000 USDT</div>
+            </div>
+
+            <!-- Deposit Section -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-3 text-green-400">💰 <span data-translate="deposit">Deposit</span> (<span data-translate="profit_35">35% Profit</span>)</h3>
+                <div class="space-y-3">
+                    <div class="bg-gray-800 rounded-lg p-3">
+                        <p class="text-sm text-gray-300 mb-2" data-translate="wallet_address">Wallet Address (TRC20):</p>
+                        <div class="bg-gray-900 rounded p-2 text-xs font-mono break-all" id="depositAddress">
+                            TZ5EtftUG7hPqdKPWLBxjf397BTqef1QQC
+                        </div>
+                        <button id="copyAddressBtn" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-all" data-translate="copy_address">Copy Address</button>
+                    </div>
+                    
+                    <div class="bg-yellow-900 border border-yellow-600 rounded-lg p-3">
+                        <h4 class="font-bold text-yellow-400 mb-2">🎯 <span data-translate="deposit_benefits">Deposit Benefits:</span></h4>
+                        <ul class="text-sm space-y-1">
+                            <li data-translate="min_deposit">• Minimum deposit: $15</li>
+                            <li data-translate="guaranteed_profit">• 35% guaranteed profit in 30 days</li>
+                            <li data-translate="example_profit">• Example: $1000 deposit + $350 profit = $1350 total</li>
+                            <li data-translate="auto_trading">• Automatic trading 24/7</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Section -->
+            <div class="glass-effect rounded-xl p-4 mb-4">
+                <h3 class="text-lg font-bold mb-3 text-red-400">💸 <span data-translate="withdraw">Withdraw</span></h3>
+                <div class="space-y-3">
+                    <div class="bg-red-900 border border-red-600 rounded-lg p-3">
+                        <h4 class="font-bold text-red-400 mb-2">⚠️ <span data-translate="withdraw_conditions">Withdrawal Conditions:</span></h4>
+                        <ul class="text-sm space-y-1">
+                            <li data-translate="min_withdraw">• Minimum withdrawal: $15</li>
+                            <li data-translate="vip_users">• VIP users: 7 days after deposit</li>
+                            <li data-translate="processing_time">• Processing time: 24-48 hours</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <input type="text" id="withdrawAddress" data-translate-placeholder="destination_address" placeholder="Destination wallet address (TRC20)" 
+                               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white">
+                        <input type="number" id="withdrawAmount" data-translate-placeholder="withdraw_amount" placeholder="Withdrawal amount (USDT)" 
+                               class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white" step="0.000001" min="15">
+                        <button id="withdrawBtn" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition-all" data-translate="request_withdraw">
+                            Request Withdrawal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="glass-effect rounded-xl p-4">
+                <h3 class="text-lg font-bold mb-3 text-purple-400">📋 <span data-translate="transaction_history">Transaction History</span></h3>
+                <div id="transactionList" class="space-y-2">
+                    <p class="text-center text-gray-400" data-translate="no_transactions">No transactions yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Page -->
+        <div id="tasksPage" class="p-6 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center" data-translate="daily_tasks">Daily Tasks</h2>
+            
+            <!-- Daily Tasks -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3 text-yellow-400" data-translate="daily_tasks">Daily Tasks</h3>
+                <div class="space-y-4" id="dailyTasksList">
+                    <!-- Tasks will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Weekly Tasks -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3 text-blue-400" data-translate="weekly_tasks">Weekly Tasks</h3>
+                <div class="space-y-4" id="weeklyTasksList">
+                    <!-- Tasks will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Page -->
+        <div id="gamesPage" class="p-6 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center" data-translate="games_entertainment">Games & Entertainment</h2>
+            
+            <!-- Games Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button id="wheelGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🎰</div>
+                    <p class="text-sm font-semibold" data-translate="lucky_wheel">Lucky Wheel</p>
+                </button>
+                
+                <button id="slotsGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🎲</div>
+                    <p class="text-sm font-semibold" data-translate="slot_machine">Slot Machine</p>
+                </button>
+
+                <button id="diceGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🎯</div>
+                    <p class="text-sm font-semibold" data-translate="dice_game">Dice Game</p>
+                </button>
+
+                <button id="cardGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🃏</div>
+                    <p class="text-sm font-semibold" data-translate="card_game">Card Game</p>
+                </button>
+
+                <button id="rouletteGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🎡</div>
+                    <p class="text-sm font-semibold" data-translate="roulette">Roulette</p>
+                </button>
+
+                <button id="coinFlipGameBtn" class="glass-effect rounded-xl p-4 text-center hover:scale-105 transition-all duration-300">
+                    <div class="text-3xl mb-2">🪙</div>
+                    <p class="text-sm font-semibold" data-translate="coin_flip">Coin Flip</p>
+                </button>
+            </div>
+
+            <!-- Game Container -->
+            <div id="gameContainer" class="glass-effect rounded-xl p-6 game-container">
+                <p class="text-center text-white/70" data-translate="select_game">Select a game to play</p>
+            </div>
+        </div>
+
+        <!-- Referral Page -->
+        <div id="referralPage" class="p-6 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center" data-translate="referral_program">Referral Program</h2>
+            
+            <!-- Referral Rewards Info -->
+            <div class="glass-effect rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold mb-3 text-yellow-400">💰 <span data-translate="referral_rewards">Referral Rewards</span></h3>
+                <div class="space-y-3">
+                    <div class="bg-green-900 border border-green-600 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">👥</span>
+                                <span class="font-bold" data-translate="invite_friend">Invite Friend</span>
+                            </div>
+                            <div class="text-green-400 font-bold">+0.15 USDT</div>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-1" data-translate="per_friend_invited">For each friend you invite</p>
+                    </div>
+                    
+                    <div class="bg-blue-900 border border-blue-600 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">💎</span>
+                                <span class="font-bold" data-translate="friend_deposit">Friend Deposit</span>
+                            </div>
+                            <div class="text-blue-400 font-bold" data-translate="commission_5">+5% Commission</div>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-1" data-translate="from_friend_deposits">From each friend's deposit</p>
+                    </div>
+                    
+                    <div class="bg-purple-900 border border-purple-600 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">🎮</span>
+                                <span class="font-bold" data-translate="friend_games">Friend Games</span>
+                            </div>
+                            <div class="text-purple-400 font-bold" data-translate="commission_5_games">+5% Commission</div>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-1" data-translate="from_friend_wins">From friends' game wins</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Stats -->
+            <div class="glass-effect rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold mb-3 text-green-400" data-translate="your_referral_stats">Your Referral Stats</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400" id="totalReferrals">0</div>
+                        <p class="text-white/70" data-translate="total_referrals">Total Referrals</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-400" id="referralEarnings">0.00</div>
+                        <p class="text-white/70" data-translate="referral_earnings">Referral Earnings</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4 bg-white/5 rounded-lg p-3">
+                    <h4 class="font-bold text-orange-400 mb-2">🎯 <span data-translate="referral_goals">Referral Goals:</span></h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span data-translate="first_10_referrals">First 10 referrals</span>
+                            <span class="text-green-400 font-bold" data-translate="reward_05">Reward: +0.5 USDT</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span data-translate="25_referrals">25 referrals</span>
+                            <span class="text-blue-400 font-bold" data-translate="reward_12">Reward: +1.2 USDT</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span data-translate="50_referrals">50 referrals</span>
+                            <span class="text-purple-400 font-bold" data-translate="reward_30">Reward: +3.0 USDT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Link -->
+            <div class="glass-effect rounded-xl p-4 mb-6">
+                <h3 class="text-lg font-bold mb-3 text-yellow-400" data-translate="your_referral_link">Your Referral Link</h3>
+                <div class="bg-gray-800 rounded-lg p-3 mb-3">
+                    <div class="text-xs font-mono break-all" id="referralLink"></div>
+                </div>
+                <button id="copyReferralBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-bold transition-all" data-translate="copy_referral_link">
+                    Copy Referral Link
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 glass-effect border-t border-white/20">
+            <div class="flex justify-around py-2">
+                <button id="homeNavBtn" class="flex flex-col items-center p-2 nav-btn active transition-all duration-300">
+                    <div class="text-xl mb-1">🏠</div>
+                    <span class="text-xs font-medium" data-translate="home">Home</span>
+                </button>
+                <button id="marketNavBtn" class="flex flex-col items-center p-2 nav-btn transition-all duration-300">
+                    <div class="text-xl mb-1">📊</div>
+                    <span class="text-xs font-medium" data-translate="market">Market</span>
+                </button>
+                <button id="walletNavBtn" class="flex flex-col items-center p-2 nav-btn transition-all duration-300">
+                    <div class="text-xl mb-1">💎</div>
+                    <span class="text-xs font-medium" data-translate="wallet">Wallet</span>
+                </button>
+                <button id="tasksNavBtn" class="flex flex-col items-center p-2 nav-btn transition-all duration-300">
+                    <div class="text-xl mb-1">📋</div>
+                    <span class="text-xs font-medium" data-translate="tasks">Tasks</span>
+                </button>
+                <button id="gamesNavBtn" class="flex flex-col items-center p-2 nav-btn transition-all duration-300">
+                    <div class="text-xl mb-1">🎮</div>
+                    <span class="text-xs font-medium" data-translate="games">Games</span>
+                </button>
+                <button id="referralNavBtn" class="flex flex-col items-center p-2 nav-btn transition-all duration-300">
+                    <div class="text-xl mb-1">👥</div>
+                    <span class="text-xs font-medium" data-translate="referral">Referral</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translation System
+        let currentLanguage = 'en';
+        
+        const translations = {
+            en: {
+                welcome: "Welcome dear user",
+                balance: "Your Balance",
+                daily_earnings: "Today's Earnings",
+                total_earnings: "Total Earnings",
+                mining_status: "Click to start mining",
+                wallet: "Wallet",
+                games: "Games",
+                market: "Market",
+                tasks: "Tasks",
+                referral: "Referral",
+                home: "Home",
+                live: "Live",
+                mining_started: "🎉 Mining started! Earning 5 USDT over 30 days",
+                insufficient_balance: "Insufficient balance!",
+                smart_investment: "Smart Investment Platform",
+                regular_user: "Regular User",
+                crypto_market: "Crypto Market",
+                refresh: "Refresh",
+                total_market: "Total Market",
+                volume_24h: "24h Volume",
+                search_crypto: "Search cryptocurrency...",
+                loading: "Loading...",
+                market_rank: "Market Rank",
+                market_cap: "Market Cap",
+                circulating_supply: "Circulating Supply",
+                price_chart: "Price Chart (7 days)",
+                current_balance: "Current Balance",
+                deposit: "Deposit",
+                profit_35: "35% Profit",
+                wallet_address: "Wallet Address (TRC20)",
+                copy_address: "Copy Address",
+                deposit_benefits: "Deposit Benefits:",
+                min_deposit: "• Minimum deposit: $15",
+                guaranteed_profit: "• 35% guaranteed profit in 30 days",
+                example_profit: "• Example: $1000 deposit + $350 profit = $1350 total",
+                auto_trading: "• Automatic trading 24/7",
+                withdraw: "Withdraw",
+                withdraw_conditions: "Withdrawal Conditions:",
+                min_withdraw: "• Minimum withdrawal: $15",
+                vip_users: "• VIP users: 7 days after deposit",
+                processing_time: "• Processing time: 24-48 hours",
+                destination_address: "Destination wallet address (TRC20)",
+                withdraw_amount: "Withdrawal amount (USDT)",
+                request_withdraw: "Request Withdrawal",
+                transaction_history: "Transaction History",
+                no_transactions: "No transactions yet",
+                daily_tasks: "Daily Tasks",
+                weekly_tasks: "Weekly Tasks",
+                games_entertainment: "Games & Entertainment",
+                lucky_wheel: "Lucky Wheel",
+                slot_machine: "Slot Machine",
+                dice_game: "Dice Game",
+                card_game: "Card Game",
+                roulette: "Roulette",
+                coin_flip: "Coin Flip",
+                select_game: "Select a game to play",
+                referral_program: "Referral Program",
+                referral_rewards: "Referral Rewards",
+                invite_friend: "Invite Friend",
+                per_friend_invited: "For each friend you invite",
+                friend_deposit: "Friend Deposit",
+                commission_5: "+5% Commission",
+                from_friend_deposits: "From each friend's deposit",
+                friend_games: "Friend Games",
+                commission_5_games: "+5% Commission",
+                from_friend_wins: "From friends' game wins",
+                your_referral_stats: "Your Referral Stats",
+                total_referrals: "Total Referrals",
+                referral_earnings: "Referral Earnings",
+                referral_goals: "Referral Goals:",
+                first_10_referrals: "First 10 referrals",
+                reward_05: "Reward: +0.5 USDT",
+                "25_referrals": "25 referrals",
+                reward_12: "Reward: +1.2 USDT",
+                "50_referrals": "50 referrals",
+                reward_30: "Reward: +3.0 USDT",
+                your_referral_link: "Your Referral Link",
+                copy_referral_link: "Copy Referral Link",
+                daily_login: "Daily Login",
+                mining_1hour: "1 Hour Mining",
+                watch_videos: "Watch 5 Videos",
+                deposit_50: "Deposit $50",
+                play_games: "Play 10 Games",
+                completed: "✅ Completed",
+                pending: "⏳ Pending",
+                claim: "Claim",
+                videos: "videos",
+                games: "games",
+                bet_amount: "Bet Amount:",
+                place_bet: "Place Bet",
+                spin: "Spin",
+                roll_dice: "Roll Dice",
+                flip_coin: "Flip Coin",
+                heads: "Heads",
+                tails: "Tails",
+                you_won: "You Won!",
+                you_lost: "You Lost!",
+                game_result: "Game Result",
+                play_again: "Play Again",
+                insufficient_funds: "Insufficient funds for this bet!",
+                copied: "Copied to clipboard!",
+                withdrawal_requested: "Withdrawal request submitted successfully!",
+                invalid_address: "Please enter a valid wallet address",
+                invalid_amount: "Please enter a valid amount (minimum $15)",
+                task_completed: "Task completed! Reward claimed.",
+                address_copied: "Address copied to clipboard!",
+                link_copied: "Referral link copied to clipboard!"
+            },
+            es: {
+                welcome: "Bienvenido querido usuario",
+                balance: "Tu Saldo",
+                daily_earnings: "Ganancias de Hoy",
+                total_earnings: "Ganancias Totales",
+                mining_status: "Haz clic para comenzar a minar",
+                wallet: "Billetera",
+                games: "Juegos",
+                market: "Mercado",
+                tasks: "Tareas",
+                referral: "Referidos",
+                home: "Inicio",
+                live: "En Vivo",
+                mining_started: "🎉 ¡Minería iniciada! Ganando 5 USDT en 30 días",
+                insufficient_balance: "¡Saldo insuficiente!",
+                smart_investment: "Plataforma de Inversión Inteligente",
+                regular_user: "Usuario Regular",
+                crypto_market: "Mercado Crypto",
+                refresh: "Actualizar",
+                total_market: "Mercado Total",
+                volume_24h: "Volumen 24h",
+                search_crypto: "Buscar criptomoneda...",
+                loading: "Cargando...",
+                market_rank: "Rango de Mercado",
+                market_cap: "Capitalización",
+                circulating_supply: "Suministro Circulante",
+                price_chart: "Gráfico de Precios (7 días)",
+                current_balance: "Saldo Actual",
+                deposit: "Depósito",
+                profit_35: "35% Ganancia",
+                wallet_address: "Dirección de Billetera (TRC20)",
+                copy_address: "Copiar Dirección",
+                deposit_benefits: "Beneficios del Depósito:",
+                min_deposit: "• Depósito mínimo: $15",
+                guaranteed_profit: "• 35% ganancia garantizada en 30 días",
+                example_profit: "• Ejemplo: $1000 depósito + $350 ganancia = $1350 total",
+                auto_trading: "• Trading automático 24/7",
+                withdraw: "Retirar",
+                withdraw_conditions: "Condiciones de Retiro:",
+                min_withdraw: "• Retiro mínimo: $15",
+                vip_users: "• Usuarios VIP: 7 días después del depósito",
+                processing_time: "• Tiempo de procesamiento: 24-48 horas",
+                destination_address: "Dirección de billetera destino (TRC20)",
+                withdraw_amount: "Cantidad de retiro (USDT)",
+                request_withdraw: "Solicitar Retiro",
+                transaction_history: "Historial de Transacciones",
+                no_transactions: "Aún no hay transacciones",
+                daily_tasks: "Tareas Diarias",
+                weekly_tasks: "Tareas Semanales",
+                games_entertainment: "Juegos y Entretenimiento",
+                lucky_wheel: "Rueda de la Suerte",
+                slot_machine: "Máquina Tragamonedas",
+                dice_game: "Juego de Dados",
+                card_game: "Juego de Cartas",
+                roulette: "Ruleta",
+                coin_flip: "Cara o Cruz",
+                select_game: "Selecciona un juego para jugar",
+                referral_program: "Programa de Referidos",
+                referral_rewards: "Recompensas de Referidos",
+                invite_friend: "Invitar Amigo",
+                per_friend_invited: "Por cada amigo que invites",
+                friend_deposit: "Depósito de Amigo",
+                commission_5: "+5% Comisión",
+                from_friend_deposits: "De cada depósito de tus amigos",
+                friend_games: "Juegos de Amigos",
+                commission_5_games: "+5% Comisión",
+                from_friend_wins: "De las victorias de juegos de amigos",
+                your_referral_stats: "Tus Estadísticas de Referidos",
+                total_referrals: "Total de Referidos",
+                referral_earnings: "Ganancias de Referidos",
+                referral_goals: "Objetivos de Referidos:",
+                first_10_referrals: "Primeros 10 referidos",
+                reward_05: "Recompensa: +0.5 USDT",
+                "25_referrals": "25 referidos",
+                reward_12: "Recompensa: +1.2 USDT",
+                "50_referrals": "50 referidos",
+                reward_30: "Recompensa: +3.0 USDT",
+                your_referral_link: "Tu Enlace de Referido",
+                copy_referral_link: "Copiar Enlace de Referido",
+                daily_login: "Inicio de Sesión Diario",
+                mining_1hour: "Minería de 1 Hora",
+                watch_videos: "Ver 5 Videos",
+                deposit_50: "Depositar $50",
+                play_games: "Jugar 10 Juegos",
+                completed: "✅ Completado",
+                pending: "⏳ Pendiente",
+                claim: "Reclamar",
+                videos: "videos",
+                games: "juegos",
+                bet_amount: "Cantidad de Apuesta:",
+                place_bet: "Hacer Apuesta",
+                spin: "Girar",
+                roll_dice: "Lanzar Dados",
+                flip_coin: "Lanzar Moneda",
+                heads: "Cara",
+                tails: "Cruz",
+                you_won: "¡Ganaste!",
+                you_lost: "¡Perdiste!",
+                game_result: "Resultado del Juego",
+                play_again: "Jugar de Nuevo",
+                insufficient_funds: "¡Fondos insuficientes para esta apuesta!",
+                copied: "¡Copiado al portapapeles!",
+                withdrawal_requested: "¡Solicitud de retiro enviada exitosamente!",
+                invalid_address: "Por favor ingresa una dirección de billetera válida",
+                invalid_amount: "Por favor ingresa una cantidad válida (mínimo $15)",
+                task_completed: "¡Tarea completada! Recompensa reclamada.",
+                address_copied: "¡Dirección copiada al portapapeles!",
+                link_copied: "¡Enlace de referido copiado al portapapeles!"
+            },
+            zh: {
+                welcome: "欢迎亲爱的用户",
+                balance: "您的余额",
+                daily_earnings: "今日收益",
+                total_earnings: "总收益",
+                mining_status: "点击开始挖矿",
+                wallet: "钱包",
+                games: "游戏",
+                market: "市场",
+                tasks: "任务",
+                referral: "推荐",
+                home: "首页",
+                live: "实时",
+                mining_started: "🎉 挖矿已开始！30天内赚取5 USDT",
+                insufficient_balance: "余额不足！",
+                smart_investment: "智能投资平台",
+                regular_user: "普通用户",
+                crypto_market: "加密货币市场",
+                refresh: "刷新",
+                total_market: "总市值",
+                volume_24h: "24小时成交量",
+                search_crypto: "搜索加密货币...",
+                loading: "加载中...",
+                market_rank: "市场排名",
+                market_cap: "市值",
+                circulating_supply: "流通供应量",
+                price_chart: "价格图表（7天）",
+                current_balance: "当前余额",
+                deposit: "存款",
+                profit_35: "35%利润",
+                wallet_address: "钱包地址 (TRC20)",
+                copy_address: "复制地址",
+                deposit_benefits: "存款优势：",
+                min_deposit: "• 最低存款：$15",
+                guaranteed_profit: "• 30天内保证35%利润",
+                example_profit: "• 例如：$1000存款 + $350利润 = $1350总计",
+                auto_trading: "• 24/7自动交易",
+                withdraw: "提取",
+                withdraw_conditions: "提取条件：",
+                min_withdraw: "• 最低提取：$15",
+                vip_users: "• VIP用户：存款后7天",
+                processing_time: "• 处理时间：24-48小时",
+                destination_address: "目标钱包地址 (TRC20)",
+                withdraw_amount: "提取金额 (USDT)",
+                request_withdraw: "请求提取",
+                transaction_history: "交易历史",
+                no_transactions: "暂无交易",
+                daily_tasks: "每日任务",
+                weekly_tasks: "每周任务",
+                games_entertainment: "游戏娱乐",
+                lucky_wheel: "幸运轮盘",
+                slot_machine: "老虎机",
+                dice_game: "骰子游戏",
+                card_game: "纸牌游戏",
+                roulette: "轮盘赌",
+                coin_flip: "抛硬币",
+                select_game: "选择一个游戏来玩",
+                referral_program: "推荐计划",
+                referral_rewards: "推荐奖励",
+                invite_friend: "邀请朋友",
+                per_friend_invited: "每邀请一位朋友",
+                friend_deposit: "朋友存款",
+                commission_5: "+5%佣金",
+                from_friend_deposits: "来自朋友的每笔存款",
+                friend_games: "朋友游戏",
+                commission_5_games: "+5%佣金",
+                from_friend_wins: "来自朋友的游戏胜利",
+                your_referral_stats: "您的推荐统计",
+                total_referrals: "总推荐数",
+                referral_earnings: "推荐收益",
+                referral_goals: "推荐目标：",
+                first_10_referrals: "前10个推荐",
+                reward_05: "奖励：+0.5 USDT",
+                "25_referrals": "25个推荐",
+                reward_12: "奖励：+1.2 USDT",
+                "50_referrals": "50个推荐",
+                reward_30: "奖励：+3.0 USDT",
+                your_referral_link: "您的推荐链接",
+                copy_referral_link: "复制推荐链接",
+                daily_login: "每日登录",
+                mining_1hour: "1小时挖矿",
+                watch_videos: "观看5个视频",
+                deposit_50: "存款$50",
+                play_games: "玩10个游戏",
+                completed: "✅ 已完成",
+                pending: "⏳ 待处理",
+                claim: "领取",
+                videos: "视频",
+                games: "游戏",
+                bet_amount: "下注金额：",
+                place_bet: "下注",
+                spin: "旋转",
+                roll_dice: "掷骰子",
+                flip_coin: "抛硬币",
+                heads: "正面",
+                tails: "反面",
+                you_won: "您赢了！",
+                you_lost: "您输了！",
+                game_result: "游戏结果",
+                play_again: "再玩一次",
+                insufficient_funds: "此次下注资金不足！",
+                copied: "已复制到剪贴板！",
+                withdrawal_requested: "提取请求已成功提交！",
+                invalid_address: "请输入有效的钱包地址",
+                invalid_amount: "请输入有效金额（最低$15）",
+                task_completed: "任务完成！奖励已领取。",
+                address_copied: "地址已复制到剪贴板！",
+                link_copied: "推荐链接已复制到剪贴板！"
+            },
+            fa: {
+                welcome: "خوش آمدید کاربر عزیز",
+                balance: "موجودی شما",
+                daily_earnings: "درآمد امروز",
+                total_earnings: "کل درآمد",
+                mining_status: "برای شروع استخراج کلیک کنید",
+                wallet: "کیف پول",
+                games: "بازی‌ها",
+                market: "مارکت",
+                tasks: "تسک‌ها",
+                referral: "رفرال",
+                home: "خانه",
+                live: "زنده",
+                mining_started: "🎉 استخراج شروع شد! کسب ۵ تتر در ۳۰ روز",
+                insufficient_balance: "موجودی کافی نیست!",
+                smart_investment: "پلتفرم سرمایه‌گذاری هوشمند",
+                regular_user: "کاربر عادی",
+                crypto_market: "مارکت رمزارزها",
+                refresh: "بروزرسانی",
+                total_market: "کل بازار",
+                volume_24h: "حجم ۲۴ساعته",
+                search_crypto: "جستجوی رمزارز...",
+                loading: "در حال بارگذاری...",
+                market_rank: "رتبه بازار",
+                market_cap: "ارزش بازار",
+                circulating_supply: "عرضه در گردش",
+                price_chart: "نمودار قیمت (۷ روز اخیر)",
+                current_balance: "موجودی فعلی",
+                deposit: "واریز",
+                profit_35: "سود ۳۵ درصدی",
+                wallet_address: "آدرس کیف پول (TRC20)",
+                copy_address: "کپی آدرس",
+                deposit_benefits: "مزایای واریز:",
+                min_deposit: "• حداقل واریز: ۱۵ دلار",
+                guaranteed_profit: "• سود ۳۵ درصدی تضمینی در ۳۰ روز",
+                example_profit: "• مثال: ۱۰۰۰ دلار واریز + ۳۵۰ دلار سود = ۱۳۵۰ دلار کل",
+                auto_trading: "• معاملات خودکار ۲۴/۷",
+                withdraw: "برداشت",
+                withdraw_conditions: "شرایط برداشت:",
+                min_withdraw: "• حداقل برداشت: ۱۵ دلار",
+                vip_users: "• کاربران ویژه: ۷ روز پس از واریز",
+                processing_time: "• زمان پردازش: ۲۴-۴۸ ساعت",
+                destination_address: "آدرس کیف پول مقصد (TRC20)",
+                withdraw_amount: "مبلغ برداشت (USDT)",
+                request_withdraw: "درخواست برداشت",
+                transaction_history: "تاریخچه تراکنش‌ها",
+                no_transactions: "هنوز تراکنشی وجود ندارد",
+                daily_tasks: "تسک‌های روزانه",
+                weekly_tasks: "تسک‌های هفتگی",
+                games_entertainment: "بازی‌ها و سرگرمی",
+                lucky_wheel: "گردونه شانس",
+                slot_machine: "اسلات ماشین",
+                dice_game: "تاس بازی",
+                card_game: "کارت بازی",
+                roulette: "رولت",
+                coin_flip: "سکه و شیر",
+                select_game: "یک بازی برای بازی انتخاب کنید",
+                referral_program: "برنامه رفرال",
+                referral_rewards: "پاداش‌های رفرال",
+                invite_friend: "دعوت دوست",
+                per_friend_invited: "به ازای هر دوست که دعوت کنید",
+                friend_deposit: "واریز دوست",
+                commission_5: "+۵% کمیسیون",
+                from_friend_deposits: "از هر واریز دوستان شما",
+                friend_games: "بازی دوست",
+                commission_5_games: "+۵% کمیسیون",
+                from_friend_wins: "از برد بازی‌های دوستان",
+                your_referral_stats: "آمار رفرال شما",
+                total_referrals: "کل رفرال‌ها",
+                referral_earnings: "درآمد رفرال",
+                referral_goals: "هدف‌های رفرال:",
+                first_10_referrals: "۱۰ رفرال اول",
+                reward_05: "پاداش: +۰.۵ USDT",
+                "25_referrals": "۲۵ رفرال",
+                reward_12: "پاداش: +۱.۲ USDT",
+                "50_referrals": "۵۰ رفرال",
+                reward_30: "پاداش: +۳.۰ USDT",
+                your_referral_link: "لینک رفرال شما",
+                copy_referral_link: "کپی لینک رفرال",
+                daily_login: "ورود روزانه",
+                mining_1hour: "استخراج ۱ ساعته",
+                watch_videos: "تماشای ۵ ویدیو",
+                deposit_50: "واریز ۵۰ دلار",
+                play_games: "انجام ۱۰ بازی",
+                completed: "✅ تکمیل شده",
+                pending: "⏳ در انتظار",
+                claim: "دریافت",
+                videos: "ویدیو",
+                games: "بازی",
+                bet_amount: "مبلغ شرط:",
+                place_bet: "شرط بندی",
+                spin: "چرخاندن",
+                roll_dice: "پرتاب تاس",
+                flip_coin: "پرتاب سکه",
+                heads: "شیر",
+                tails: "خط",
+                you_won: "شما برنده شدید!",
+                you_lost: "شما باختید!",
+                game_result: "نتیجه بازی",
+                play_again: "بازی مجدد",
+                insufficient_funds: "موجودی کافی برای این شرط نیست!",
+                copied: "کپی شد!",
+                withdrawal_requested: "درخواست برداشت با موفقیت ثبت شد!",
+                invalid_address: "لطفا آدرس کیف پول معتبری وارد کنید",
+                invalid_amount: "لطفا مبلغ معتبری وارد کنید (حداقل ۱۵ دلار)",
+                task_completed: "تسک تکمیل شد! پاداش دریافت شد.",
+                address_copied: "آدرس کپی شد!",
+                link_copied: "لینک رفرال کپی شد!"
+            },
+            ar: {
+                welcome: "مرحباً بالمستخدم العزيز",
+                balance: "رصيدك",
+                daily_earnings: "أرباح اليوم",
+                total_earnings: "إجمالي الأرباح",
+                mining_status: "انقر لبدء التعدين",
+                wallet: "المحفظة",
+                games: "الألعاب",
+                market: "السوق",
+                tasks: "المهام",
+                referral: "الإحالة",
+                home: "الرئيسية",
+                live: "مباشر",
+                mining_started: "🎉 بدأ التعدين! كسب 5 USDT خلال 30 يوماً",
+                insufficient_balance: "الرصيد غير كافي!",
+                smart_investment: "منصة الاستثمار الذكي",
+                regular_user: "مستخدم عادي",
+                crypto_market: "سوق العملات المشفرة",
+                refresh: "تحديث",
+                total_market: "إجمالي السوق",
+                volume_24h: "حجم 24 ساعة",
+                search_crypto: "البحث عن عملة مشفرة...",
+                loading: "جاري التحميل...",
+                market_rank: "ترتيب السوق",
+                market_cap: "القيمة السوقية",
+                circulating_supply: "المعروض المتداول",
+                price_chart: "مخطط الأسعار (7 أيام)",
+                current_balance: "الرصيد الحالي",
+                deposit: "إيداع",
+                profit_35: "ربح 35%",
+                wallet_address: "عنوان المحفظة (TRC20)",
+                copy_address: "نسخ العنوان",
+                deposit_benefits: "فوائد الإيداع:",
+                min_deposit: "• الحد الأدنى للإيداع: 15$",
+                guaranteed_profit: "• ربح مضمون 35% خلال 30 يوماً",
+                example_profit: "• مثال: 1000$ إيداع + 350$ ربح = 1350$ إجمالي",
+                auto_trading: "• تداول تلقائي 24/7",
+                withdraw: "سحب",
+                withdraw_conditions: "شروط السحب:",
+                min_withdraw: "• الحد الأدنى للسحب: 15$",
+                vip_users: "• المستخدمون المميزون: 7 أيام بعد الإيداع",
+                processing_time: "• وقت المعالجة: 24-48 ساعة",
+                destination_address: "عنوان المحفظة الوجهة (TRC20)",
+                withdraw_amount: "مبلغ السحب (USDT)",
+                request_withdraw: "طلب سحب",
+                transaction_history: "تاريخ المعاملات",
+                no_transactions: "لا توجد معاملات بعد",
+                daily_tasks: "المهام اليومية",
+                weekly_tasks: "المهام الأسبوعية",
+                games_entertainment: "الألعاب والترفيه",
+                lucky_wheel: "عجلة الحظ",
+                slot_machine: "ماكينة القمار",
+                dice_game: "لعبة النرد",
+                card_game: "لعبة الورق",
+                roulette: "الروليت",
+                coin_flip: "قذف العملة",
+                select_game: "اختر لعبة للعب",
+                referral_program: "برنامج الإحالة",
+                referral_rewards: "مكافآت الإحالة",
+                invite_friend: "دعوة صديق",
+                per_friend_invited: "لكل صديق تدعوه",
+                friend_deposit: "إيداع الصديق",
+                commission_5: "+5% عمولة",
+                from_friend_deposits: "من كل إيداع للأصدقاء",
+                friend_games: "ألعاب الأصدقاء",
+                commission_5_games: "+5% عمولة",
+                from_friend_wins: "من انتصارات ألعاب الأصدقاء",
+                your_referral_stats: "إحصائيات الإحالة الخاصة بك",
+                total_referrals: "إجمالي الإحالات",
+                referral_earnings: "أرباح الإحالة",
+                referral_goals: "أهداف الإحالة:",
+                first_10_referrals: "أول 10 إحالات",
+                reward_05: "المكافأة: +0.5 USDT",
+                "25_referrals": "25 إحالة",
+                reward_12: "المكافأة: +1.2 USDT",
+                "50_referrals": "50 إحالة",
+                reward_30: "المكافأة: +3.0 USDT",
+                your_referral_link: "رابط الإحالة الخاص بك",
+                copy_referral_link: "نسخ رابط الإحالة",
+                daily_login: "تسجيل الدخول اليومي",
+                mining_1hour: "تعدين لمدة ساعة واحدة",
+                watch_videos: "مشاهدة 5 فيديوهات",
+                deposit_50: "إيداع 50$",
+                play_games: "لعب 10 ألعاب",
+                completed: "✅ مكتمل",
+                pending: "⏳ معلق",
+                claim: "استلام",
+                videos: "فيديوهات",
+                games: "ألعاب",
+                bet_amount: "مبلغ الرهان:",
+                place_bet: "وضع رهان",
+                spin: "دوران",
+                roll_dice: "رمي النرد",
+                flip_coin: "قذف العملة",
+                heads: "وجه",
+                tails: "ظهر",
+                you_won: "لقد فزت!",
+                you_lost: "لقد خسرت!",
+                game_result: "نتيجة اللعبة",
+                play_again: "العب مرة أخرى",
+                insufficient_funds: "الأموال غير كافية لهذا الرهان!",
+                copied: "تم النسخ إلى الحافظة!",
+                withdrawal_requested: "تم تقديم طلب السحب بنجاح!",
+                invalid_address: "يرجى إدخال عنوان محفظة صالح",
+                invalid_amount: "يرجى إدخال مبلغ صالح (الحد الأدنى 15$)",
+                task_completed: "تم إكمال المهمة! تم استلام المكافأة.",
+                address_copied: "تم نسخ العنوان إلى الحافظة!",
+                link_copied: "تم نسخ رابط الإحالة إلى الحافظة!"
+            },
+            fr: {
+                welcome: "Bienvenue cher utilisateur",
+                balance: "Votre Solde",
+                daily_earnings: "Gains d'Aujourd'hui",
+                total_earnings: "Gains Totaux",
+                mining_status: "Cliquez pour commencer le minage",
+                wallet: "Portefeuille",
+                games: "Jeux",
+                market: "Marché",
+                tasks: "Tâches",
+                referral: "Parrainage",
+                home: "Accueil",
+                live: "En Direct",
+                mining_started: "🎉 Minage commencé! Gagner 5 USDT en 30 jours",
+                insufficient_balance: "Solde insuffisant!",
+                smart_investment: "Plateforme d'Investissement Intelligent",
+                regular_user: "Utilisateur Régulier",
+                crypto_market: "Marché Crypto",
+                refresh: "Actualiser",
+                total_market: "Marché Total",
+                volume_24h: "Volume 24h",
+                search_crypto: "Rechercher une cryptomonnaie...",
+                loading: "Chargement...",
+                market_rank: "Rang du Marché",
+                market_cap: "Capitalisation",
+                circulating_supply: "Offre Circulante",
+                price_chart: "Graphique des Prix (7 jours)",
+                current_balance: "Solde Actuel",
+                deposit: "Dépôt",
+                profit_35: "35% Profit",
+                wallet_address: "Adresse du Portefeuille (TRC20)",
+                copy_address: "Copier l'Adresse",
+                deposit_benefits: "Avantages du Dépôt:",
+                min_deposit: "• Dépôt minimum: 15$",
+                guaranteed_profit: "• 35% profit garanti en 30 jours",
+                example_profit: "• Exemple: 1000$ dépôt + 350$ profit = 1350$ total",
+                auto_trading: "• Trading automatique 24/7",
+                withdraw: "Retirer",
+                withdraw_conditions: "Conditions de Retrait:",
+                min_withdraw: "• Retrait minimum: 15$",
+                vip_users: "• Utilisateurs VIP: 7 jours après le dépôt",
+                processing_time: "• Temps de traitement: 24-48 heures",
+                destination_address: "Adresse du portefeuille de destination (TRC20)",
+                withdraw_amount: "Montant du retrait (USDT)",
+                request_withdraw: "Demander un Retrait",
+                transaction_history: "Historique des Transactions",
+                no_transactions: "Aucune transaction pour le moment",
+                daily_tasks: "Tâches Quotidiennes",
+                weekly_tasks: "Tâches Hebdomadaires",
+                games_entertainment: "Jeux et Divertissement",
+                lucky_wheel: "Roue de la Fortune",
+                slot_machine: "Machine à Sous",
+                dice_game: "Jeu de Dés",
+                card_game: "Jeu de Cartes",
+                roulette: "Roulette",
+                coin_flip: "Pile ou Face",
+                select_game: "Sélectionnez un jeu à jouer",
+                referral_program: "Programme de Parrainage",
+                referral_rewards: "Récompenses de Parrainage",
+                invite_friend: "Inviter un Ami",
+                per_friend_invited: "Pour chaque ami que vous invitez",
+                friend_deposit: "Dépôt d'Ami",
+                commission_5: "+5% Commission",
+                from_friend_deposits: "De chaque dépôt de vos amis",
+                friend_games: "Jeux d'Amis",
+                commission_5_games: "+5% Commission",
+                from_friend_wins: "Des victoires de jeux d'amis",
+                your_referral_stats: "Vos Statistiques de Parrainage",
+                total_referrals: "Total des Parrainages",
+                referral_earnings: "Gains de Parrainage",
+                referral_goals: "Objectifs de Parrainage:",
+                first_10_referrals: "10 premiers parrainages",
+                reward_05: "Récompense: +0.5 USDT",
+                "25_referrals": "25 parrainages",
+                reward_12: "Récompense: +1.2 USDT",
+                "50_referrals": "50 parrainages",
+                reward_30: "Récompense: +3.0 USDT",
+                your_referral_link: "Votre Lien de Parrainage",
+                copy_referral_link: "Copier le Lien de Parrainage",
+                daily_login: "Connexion Quotidienne",
+                mining_1hour: "Minage d'1 Heure",
+                watch_videos: "Regarder 5 Vidéos",
+                deposit_50: "Déposer 50$",
+                play_games: "Jouer 10 Jeux",
+                completed: "✅ Terminé",
+                pending: "⏳ En Attente",
+                claim: "Réclamer",
+                videos: "vidéos",
+                games: "jeux",
+                bet_amount: "Montant du Pari:",
+                place_bet: "Placer un Pari",
+                spin: "Tourner",
+                roll_dice: "Lancer les Dés",
+                flip_coin: "Lancer la Pièce",
+                heads: "Face",
+                tails: "Pile",
+                you_won: "Vous avez gagné!",
+                you_lost: "Vous avez perdu!",
+                game_result: "Résultat du Jeu",
+                play_again: "Rejouer",
+                insufficient_funds: "Fonds insuffisants pour ce pari!",
+                copied: "Copié dans le presse-papiers!",
+                withdrawal_requested: "Demande de retrait soumise avec succès!",
+                invalid_address: "Veuillez entrer une adresse de portefeuille valide",
+                invalid_amount: "Veuillez entrer un montant valide (minimum 15$)",
+                task_completed: "Tâche terminée! Récompense réclamée.",
+                address_copied: "Adresse copiée dans le presse-papiers!",
+                link_copied: "Lien de parrainage copié dans le presse-papiers!"
+            },
+            de: {
+                welcome: "Willkommen lieber Nutzer",
+                balance: "Ihr Guthaben",
+                daily_earnings: "Heutige Einnahmen",
+                total_earnings: "Gesamteinnahmen",
+                mining_status: "Klicken Sie, um das Mining zu starten",
+                wallet: "Wallet",
+                games: "Spiele",
+                market: "Markt",
+                tasks: "Aufgaben",
+                referral: "Empfehlung",
+                home: "Startseite",
+                live: "Live",
+                mining_started: "🎉 Mining gestartet! 5 USDT in 30 Tagen verdienen",
+                insufficient_balance: "Unzureichendes Guthaben!",
+                smart_investment: "Intelligente Investitionsplattform",
+                regular_user: "Regulärer Nutzer",
+                crypto_market: "Krypto-Markt",
+                refresh: "Aktualisieren",
+                total_market: "Gesamtmarkt",
+                volume_24h: "24h Volumen",
+                search_crypto: "Kryptowährung suchen...",
+                loading: "Laden...",
+                market_rank: "Marktrang",
+                market_cap: "Marktkapitalisierung",
+                circulating_supply: "Umlaufende Versorgung",
+                price_chart: "Preisdiagramm (7 Tage)",
+                current_balance: "Aktuelles Guthaben",
+                deposit: "Einzahlung",
+                profit_35: "35% Gewinn",
+                wallet_address: "Wallet-Adresse (TRC20)",
+                copy_address: "Adresse kopieren",
+                deposit_benefits: "Einzahlungsvorteile:",
+                min_deposit: "• Mindesteinzahlung: 15$",
+                guaranteed_profit: "• 35% garantierter Gewinn in 30 Tagen",
+                example_profit: "• Beispiel: 1000$ Einzahlung + 350$ Gewinn = 1350$ gesamt",
+                auto_trading: "• Automatischer Handel 24/7",
+                withdraw: "Abheben",
+                withdraw_conditions: "Abhebungsbedingungen:",
+                min_withdraw: "• Mindestabhebung: 15$",
+                vip_users: "• VIP-Nutzer: 7 Tage nach Einzahlung",
+                processing_time: "• Bearbeitungszeit: 24-48 Stunden",
+                destination_address: "Ziel-Wallet-Adresse (TRC20)",
+                withdraw_amount: "Abhebungsbetrag (USDT)",
+                request_withdraw: "Abhebung anfordern",
+                transaction_history: "Transaktionshistorie",
+                no_transactions: "Noch keine Transaktionen",
+                daily_tasks: "Tägliche Aufgaben",
+                weekly_tasks: "Wöchentliche Aufgaben",
+                games_entertainment: "Spiele & Unterhaltung",
+                lucky_wheel: "Glücksrad",
+                slot_machine: "Spielautomat",
+                dice_game: "Würfelspiel",
+                card_game: "Kartenspiel",
+                roulette: "Roulette",
+                coin_flip: "Münzwurf",
+                select_game: "Wählen Sie ein Spiel zum Spielen",
+                referral_program: "Empfehlungsprogramm",
+                referral_rewards: "Empfehlungsbelohnungen",
+                invite_friend: "Freund einladen",
+                per_friend_invited: "Für jeden Freund, den Sie einladen",
+                friend_deposit: "Freund-Einzahlung",
+                commission_5: "+5% Provision",
+                from_friend_deposits: "Von jeder Einzahlung Ihrer Freunde",
+                friend_games: "Freund-Spiele",
+                commission_5_games: "+5% Provision",
+                from_friend_wins: "Von Freunde-Spielgewinnen",
+                your_referral_stats: "Ihre Empfehlungsstatistiken",
+                total_referrals: "Gesamte Empfehlungen",
+                referral_earnings: "Empfehlungseinnahmen",
+                referral_goals: "Empfehlungsziele:",
+                first_10_referrals: "Erste 10 Empfehlungen",
+                reward_05: "Belohnung: +0.5 USDT",
+                "25_referrals": "25 Empfehlungen",
+                reward_12: "Belohnung: +1.2 USDT",
+                "50_referrals": "50 Empfehlungen",
+                reward_30: "Belohnung: +3.0 USDT",
+                your_referral_link: "Ihr Empfehlungslink",
+                copy_referral_link: "Empfehlungslink kopieren",
+                daily_login: "Tägliche Anmeldung",
+                mining_1hour: "1 Stunde Mining",
+                watch_videos: "5 Videos ansehen",
+                deposit_50: "50$ einzahlen",
+                play_games: "10 Spiele spielen",
+                completed: "✅ Abgeschlossen",
+                pending: "⏳ Ausstehend",
+                claim: "Beanspruchen",
+                videos: "Videos",
+                games: "Spiele",
+                bet_amount: "Einsatzbetrag:",
+                place_bet: "Einsatz platzieren",
+                spin: "Drehen",
+                roll_dice: "Würfel werfen",
+                flip_coin: "Münze werfen",
+                heads: "Kopf",
+                tails: "Zahl",
+                you_won: "Sie haben gewonnen!",
+                you_lost: "Sie haben verloren!",
+                game_result: "Spielergebnis",
+                play_again: "Nochmal spielen",
+                insufficient_funds: "Unzureichende Mittel für diesen Einsatz!",
+                copied: "In die Zwischenablage kopiert!",
+                withdrawal_requested: "Abhebungsanfrage erfolgreich eingereicht!",
+                invalid_address: "Bitte geben Sie eine gültige Wallet-Adresse ein",
+                invalid_amount: "Bitte geben Sie einen gültigen Betrag ein (mindestens 15$)",
+                task_completed: "Aufgabe abgeschlossen! Belohnung beansprucht.",
+                address_copied: "Adresse in die Zwischenablage kopiert!",
+                link_copied: "Empfehlungslink in die Zwischenablage kopiert!"
+            },
+            ru: {
+                welcome: "Добро пожаловать, дорогой пользователь",
+                balance: "Ваш Баланс",
+                daily_earnings: "Сегодняшние Доходы",
+                total_earnings: "Общие Доходы",
+                mining_status: "Нажмите, чтобы начать майнинг",
+                wallet: "Кошелек",
+                games: "Игры",
+                market: "Рынок",
+                tasks: "Задачи",
+                referral: "Реферал",
+                home: "Главная",
+                live: "В Прямом Эфире",
+                mining_started: "🎉 Майнинг начат! Заработок 5 USDT за 30 дней",
+                insufficient_balance: "Недостаточный баланс!",
+                smart_investment: "Платформа Умных Инвестиций",
+                regular_user: "Обычный Пользователь",
+                crypto_market: "Крипто Рынок",
+                refresh: "Обновить",
+                total_market: "Общий Рынок",
+                volume_24h: "Объем 24ч",
+                search_crypto: "Поиск криптовалюты...",
+                loading: "Загрузка...",
+                market_rank: "Рыночный Ранг",
+                market_cap: "Рыночная Капитализация",
+                circulating_supply: "Циркулирующее Предложение",
+                price_chart: "График Цен (7 дней)",
+                current_balance: "Текущий Баланс",
+                deposit: "Депозит",
+                profit_35: "35% Прибыль",
+                wallet_address: "Адрес Кошелька (TRC20)",
+                copy_address: "Копировать Адрес",
+                deposit_benefits: "Преимущества Депозита:",
+                min_deposit: "• Минимальный депозит: $15",
+                guaranteed_profit: "• 35% гарантированная прибыль за 30 дней",
+                example_profit: "• Пример: $1000 депозит + $350 прибыль = $1350 всего",
+                auto_trading: "• Автоматическая торговля 24/7",
+                withdraw: "Вывод",
+                withdraw_conditions: "Условия Вывода:",
+                min_withdraw: "• Минимальный вывод: $15",
+                vip_users: "• VIP пользователи: 7 дней после депозита",
+                processing_time: "• Время обработки: 24-48 часов",
+                destination_address: "Адрес кошелька назначения (TRC20)",
+                withdraw_amount: "Сумма вывода (USDT)",
+                request_withdraw: "Запросить Вывод",
+                transaction_history: "История Транзакций",
+                no_transactions: "Пока нет транзакций",
+                daily_tasks: "Ежедневные Задачи",
+                weekly_tasks: "Еженедельные Задачи",
+                games_entertainment: "Игры и Развлечения",
+                lucky_wheel: "Колесо Удачи",
+                slot_machine: "Игровой Автомат",
+                dice_game: "Игра в Кости",
+                card_game: "Карточная Игра",
+                roulette: "Рулетка",
+                coin_flip: "Подбрасывание Монеты",
+                select_game: "Выберите игру для игры",
+                referral_program: "Реферальная Программа",
+                referral_rewards: "Реферальные Награды",
+                invite_friend: "Пригласить Друга",
+                per_friend_invited: "За каждого приглашенного друга",
+                friend_deposit: "Депозит Друга",
+                commission_5: "+5% Комиссия",
+                from_friend_deposits: "С каждого депозита ваших друзей",
+                friend_games: "Игры Друзей",
+                commission_5_games: "+5% Комиссия",
+                from_friend_wins: "С выигрышей в играх друзей",
+                your_referral_stats: "Ваша Реферальная Статистика",
+                total_referrals: "Всего Рефералов",
+                referral_earnings: "Реферальные Доходы",
+                referral_goals: "Реферальные Цели:",
+                first_10_referrals: "Первые 10 рефералов",
+                reward_05: "Награда: +0.5 USDT",
+                "25_referrals": "25 рефералов",
+                reward_12: "Награда: +1.2 USDT",
+                "50_referrals": "50 рефералов",
+                reward_30: "Награда: +3.0 USDT",
+                your_referral_link: "Ваша Реферальная Ссылка",
+                copy_referral_link: "Копировать Реферальную Ссылку",
+                daily_login: "Ежедневный Вход",
+                mining_1hour: "Майнинг 1 Час",
+                watch_videos: "Посмотреть 5 Видео",
+                deposit_50: "Депозит $50",
+                play_games: "Сыграть 10 Игр",
+                completed: "✅ Завершено",
+                pending: "⏳ Ожидание",
+                claim: "Получить",
+                videos: "видео",
+                games: "игры",
+                bet_amount: "Сумма Ставки:",
+                place_bet: "Сделать Ставку",
+                spin: "Крутить",
+                roll_dice: "Бросить Кости",
+                flip_coin: "Подбросить Монету",
+                heads: "Орел",
+                tails: "Решка",
+                you_won: "Вы Выиграли!",
+                you_lost: "Вы Проиграли!",
+                game_result: "Результат Игры",
+                play_again: "Играть Снова",
+                insufficient_funds: "Недостаточно средств для этой ставки!",
+                copied: "Скопировано в буфер обмена!",
+                withdrawal_requested: "Запрос на вывод успешно отправлен!",
+                invalid_address: "Пожалуйста, введите действительный адрес кошелька",
+                invalid_amount: "Пожалуйста, введите действительную сумму (минимум $15)",
+                task_completed: "Задача выполнена! Награда получена.",
+                address_copied: "Адрес скопирован в буфер обмена!",
+                link_copied: "Реферальная ссылка скопирована в буфер обмена!"
+            },
+            pt: {
+                welcome: "Bem-vindo querido usuário",
+                balance: "Seu Saldo",
+                daily_earnings: "Ganhos de Hoje",
+                total_earnings: "Ganhos Totais",
+                mining_status: "Clique para começar a mineração",
+                wallet: "Carteira",
+                games: "Jogos",
+                market: "Mercado",
+                tasks: "Tarefas",
+                referral: "Indicação",
+                home: "Início",
+                live: "Ao Vivo",
+                mining_started: "🎉 Mineração iniciada! Ganhar 5 USDT em 30 dias",
+                insufficient_balance: "Saldo insuficiente!",
+                smart_investment: "Plataforma de Investimento Inteligente",
+                regular_user: "Usuário Regular",
+                crypto_market: "Mercado Crypto",
+                refresh: "Atualizar",
+                total_market: "Mercado Total",
+                volume_24h: "Volume 24h",
+                search_crypto: "Pesquisar criptomoeda...",
+                loading: "Carregando...",
+                market_rank: "Ranking do Mercado",
+                market_cap: "Capitalização",
+                circulating_supply: "Oferta Circulante",
+                price_chart: "Gráfico de Preços (7 dias)",
+                current_balance: "Saldo Atual",
+                deposit: "Depósito",
+                profit_35: "35% Lucro",
+                wallet_address: "Endereço da Carteira (TRC20)",
+                copy_address: "Copiar Endereço",
+                deposit_benefits: "Benefícios do Depósito:",
+                min_deposit: "• Depósito mínimo: $15",
+                guaranteed_profit: "• 35% lucro garantido em 30 dias",
+                example_profit: "• Exemplo: $1000 depósito + $350 lucro = $1350 total",
+                auto_trading: "• Trading automático 24/7",
+                withdraw: "Sacar",
+                withdraw_conditions: "Condições de Saque:",
+                min_withdraw: "• Saque mínimo: $15",
+                vip_users: "• Usuários VIP: 7 dias após depósito",
+                processing_time: "• Tempo de processamento: 24-48 horas",
+                destination_address: "Endereço da carteira de destino (TRC20)",
+                withdraw_amount: "Valor do saque (USDT)",
+                request_withdraw: "Solicitar Saque",
+                transaction_history: "Histórico de Transações",
+                no_transactions: "Ainda não há transações",
+                daily_tasks: "Tarefas Diárias",
+                weekly_tasks: "Tarefas Semanais",
+                games_entertainment: "Jogos e Entretenimento",
+                lucky_wheel: "Roda da Sorte",
+                slot_machine: "Caça-níqueis",
+                dice_game: "Jogo de Dados",
+                card_game: "Jogo de Cartas",
+                roulette: "Roleta",
+                coin_flip: "Cara ou Coroa",
+                select_game: "Selecione um jogo para jogar",
+                referral_program: "Programa de Indicação",
+                referral_rewards: "Recompensas de Indicação",
+                invite_friend: "Convidar Amigo",
+                per_friend_invited: "Para cada amigo que você convida",
+                friend_deposit: "Depósito do Amigo",
+                commission_5: "+5% Comissão",
+                from_friend_deposits: "De cada depósito dos seus amigos",
+                friend_games: "Jogos dos Amigos",
+                commission_5_games: "+5% Comissão",
+                from_friend_wins: "Das vitórias em jogos dos amigos",
+                your_referral_stats: "Suas Estatísticas de Indicação",
+                total_referrals: "Total de Indicações",
+                referral_earnings: "Ganhos de Indicação",
+                referral_goals: "Metas de Indicação:",
+                first_10_referrals: "Primeiras 10 indicações",
+                reward_05: "Recompensa: +0.5 USDT",
+                "25_referrals": "25 indicações",
+                reward_12: "Recompensa: +1.2 USDT",
+                "50_referrals": "50 indicações",
+                reward_30: "Recompensa: +3.0 USDT",
+                your_referral_link: "Seu Link de Indicação",
+                copy_referral_link: "Copiar Link de Indicação",
+                daily_login: "Login Diário",
+                mining_1hour: "Mineração de 1 Hora",
+                watch_videos: "Assistir 5 Vídeos",
+                deposit_50: "Depositar $50",
+                play_games: "Jogar 10 Jogos",
+                completed: "✅ Concluído",
+                pending: "⏳ Pendente",
+                claim: "Reivindicar",
+                videos: "vídeos",
+                games: "jogos",
+                bet_amount: "Valor da Aposta:",
+                place_bet: "Fazer Aposta",
+                spin: "Girar",
+                roll_dice: "Rolar Dados",
+                flip_coin: "Jogar Moeda",
+                heads: "Cara",
+                tails: "Coroa",
+                you_won: "Você Ganhou!",
+                you_lost: "Você Perdeu!",
+                game_result: "Resultado do Jogo",
+                play_again: "Jogar Novamente",
+                insufficient_funds: "Fundos insuficientes para esta aposta!",
+                copied: "Copiado para a área de transferência!",
+                withdrawal_requested: "Solicitação de saque enviada com sucesso!",
+                invalid_address: "Por favor, insira um endereço de carteira válido",
+                invalid_amount: "Por favor, insira um valor válido (mínimo $15)",
+                task_completed: "Tarefa concluída! Recompensa reivindicada.",
+                address_copied: "Endereço copiado para a área de transferência!",
+                link_copied: "Link de indicação copiado para a área de transferência!"
+            },
+            hi: {
+                welcome: "प्रिय उपयोगकर्ता का स्वागत है",
+                balance: "आपका बैलेंस",
+                daily_earnings: "आज की कमाई",
+                total_earnings: "कुल कमाई",
+                mining_status: "माइनिंग शुरू करने के लिए क्लिक करें",
+                wallet: "वॉलेट",
+                games: "गेम्स",
+                market: "मार्केट",
+                tasks: "कार्य",
+                referral: "रेफरल",
+                home: "होम",
+                live: "लाइव",
+                mining_started: "🎉 माइनिंग शुरू हुई! 30 दिनों में 5 USDT कमाएं",
+                insufficient_balance: "अपर्याप्त बैलेंस!",
+                smart_investment: "स्मार्ट निवेश प्लेटफॉर्म",
+                regular_user: "नियमित उपयोगकर्ता",
+                crypto_market: "क्रिप्टो मार्केट",
+                refresh: "रिफ्रेश",
+                total_market: "कुल मार्केट",
+                volume_24h: "24घंटे वॉल्यूम",
+                search_crypto: "क्रिप्टोकरेंसी खोजें...",
+                loading: "लोड हो रहा है...",
+                market_rank: "मार्केट रैंक",
+                market_cap: "मार्केट कैप",
+                circulating_supply: "परिचालित आपूर्ति",
+                price_chart: "मूल्य चार्ट (7 दिन)",
+                current_balance: "वर्तमान बैलेंस",
+                deposit: "जमा",
+                profit_35: "35% लाभ",
+                wallet_address: "वॉलेट पता (TRC20)",
+                copy_address: "पता कॉपी करें",
+                deposit_benefits: "जमा के फायदे:",
+                min_deposit: "• न्यूनतम जमा: $15",
+                guaranteed_profit: "• 30 दिनों में 35% गारंटीशुदा लाभ",
+                example_profit: "• उदाहरण: $1000 जमा + $350 लाभ = $1350 कुल",
+                auto_trading: "• स्वचालित ट्रेडिंग 24/7",
+                withdraw: "निकालें",
+                withdraw_conditions: "निकासी की शर्तें:",
+                min_withdraw: "• न्यूनतम निकासी: $15",
+                vip_users: "• VIP उपयोगकर्ता: जमा के 7 दिन बाद",
+                processing_time: "• प्रसंस्करण समय: 24-48 घंटे",
+                destination_address: "गंतव्य वॉलेट पता (TRC20)",
+                withdraw_amount: "निकासी राशि (USDT)",
+                request_withdraw: "निकासी का अनुरोध करें",
+                transaction_history: "लेनदेन इतिहास",
+                no_transactions: "अभी तक कोई लेनदेन नहीं",
+                daily_tasks: "दैनिक कार्य",
+                weekly_tasks: "साप्ताहिक कार्य",
+                games_entertainment: "गेम्स और मनोरंजन",
+                lucky_wheel: "लकी व्हील",
+                slot_machine: "स्लॉट मशीन",
+                dice_game: "पासा गेम",
+                card_game: "कार्ड गेम",
+                roulette: "रूलेट",
+                coin_flip: "सिक्का उछालना",
+                select_game: "खेलने के लिए एक गेम चुनें",
+                referral_program: "रेफरल प्रोग्राम",
+                referral_rewards: "रेफरल रिवार्ड्स",
+                invite_friend: "दोस्त को आमंत्रित करें",
+                per_friend_invited: "हर आमंत्रित दोस्त के लिए",
+                friend_deposit: "दोस्त की जमा",
+                commission_5: "+5% कमीशन",
+                from_friend_deposits: "आपके दोस्तों की हर जमा से",
+                friend_games: "दोस्तों के गेम्स",
+                commission_5_games: "+5% कमीशन",
+                from_friend_wins: "दोस्तों के गेम जीत से",
+                your_referral_stats: "आपके रेफरल आंकड़े",
+                total_referrals: "कुल रेफरल",
+                referral_earnings: "रेफरल कमाई",
+                referral_goals: "रेफरल लक्ष्य:",
+                first_10_referrals: "पहले 10 रेफरल",
+                reward_05: "रिवार्ड: +0.5 USDT",
+                "25_referrals": "25 रेफरल",
+                reward_12: "रिवार्ड: +1.2 USDT",
+                "50_referrals": "50 रेफरल",
+                reward_30: "रिवार्ड: +3.0 USDT",
+                your_referral_link: "आपका रेफरल लिंक",
+                copy_referral_link: "रेफरल लिंक कॉपी करें",
+                daily_login: "दैनिक लॉगिन",
+                mining_1hour: "1 घंटे की माइनिंग",
+                watch_videos: "5 वीडियो देखें",
+                deposit_50: "$50 जमा करें",
+                play_games: "10 गेम्स खेलें",
+                completed: "✅ पूर्ण",
+                pending: "⏳ लंबित",
+                claim: "दावा करें",
+                videos: "वीडियो",
+                games: "गेम्स",
+                bet_amount: "बेट राशि:",
+                place_bet: "बेट लगाएं",
+                spin: "स्पिन",
+                roll_dice: "पासा फेंकें",
+                flip_coin: "सिक्का उछालें",
+                heads: "चित",
+                tails: "पट",
+                you_won: "आप जीते!",
+                you_lost: "आप हारे!",
+                game_result: "गेम परिणाम",
+                play_again: "फिर से खेलें",
+                insufficient_funds: "इस बेट के लिए अपर्याप्त फंड!",
+                copied: "क्लिपबोर्ड में कॉपी किया गया!",
+                withdrawal_requested: "निकासी अनुरोध सफलतापूर्वक सबमिट किया गया!",
+                invalid_address: "कृपया एक वैध वॉलेट पता दर्ज करें",
+                invalid_amount: "कृपया एक वैध राशि दर्ज करें (न्यूनतम $15)",
+                task_completed: "कार्य पूर्ण! रिवार्ड का दावा किया गया।",
+                address_copied: "पता क्लिपबोर्ड में कॉपी किया गया!",
+                link_copied: "रेफरल लिंक क्लिपबोर्ड में कॉपी किया गया!"
+            }
+        };
+
+        function translate(key) {
+            return translations[currentLanguage][key] || translations['en'][key] || key;
+        }
+
+        function updateTranslations() {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                element.textContent = translate(key);
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                element.placeholder = translate(key);
+            });
+
+            // Update direction for RTL languages
+            const rtlLanguages = ['fa', 'ar'];
+            if (rtlLanguages.includes(currentLanguage)) {
+                document.documentElement.setAttribute('dir', 'rtl');
+                document.body.classList.add('rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+                document.body.classList.remove('rtl');
+            }
+        }
+
+        // App State
+        let appState = {
+            balance: 0.000000,
+            dailyEarnings: 0.000000,
+            totalEarnings: 0.000000,
+            isMining: false,
+            miningStartTime: null,
+            currentMiningEarned: 0,
+            currentPage: 'main',
+            selectedBetAmount: 0.01,
+            cryptoData: [],
+            tasks: {
+                daily: [
+                    { id: 'login', name: 'daily_login', reward: 0.05, completed: false },
+                    { id: 'mining', name: 'mining_1hour', reward: 0.10, completed: false, progress: 0 },
+                    { id: 'videos', name: 'watch_videos', reward: 0.15, completed: false, progress: 0, target: 5 },
+                    { id: 'games', name: 'play_games', reward: 0.20, completed: false, progress: 0, target: 10 }
+                ],
+                weekly: [
+                    { id: 'deposit', name: 'deposit_50', reward: 5.00, completed: false }
+                ]
+            },
+            referrals: {
+                total: 0,
+                earnings: 0.00
+            }
+        };
+
+        // Mining System
+        function startMining() {
+            if (appState.isMining) return;
+            
+            appState.isMining = true;
+            appState.miningStartTime = Date.now();
+            appState.currentMiningEarned = 0;
+            
+            const miningCircle = document.getElementById('miningCircle');
+            const miningStatus = document.getElementById('miningStatus');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const earningRate = document.getElementById('earningRate');
+            
+            miningCircle.classList.add('spinning');
+            miningStatus.textContent = translate('mining_started');
+            progressContainer.style.display = 'block';
+            earningRate.textContent = '+0.166667 USDT/day';
+            
+            showNotification(translate('mining_started'));
+            
+            // Mining timer - 30 days total for 5 USDT
+            const miningDuration = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            const totalReward = 5.0; // 5 USDT total
+            
+            const miningInterval = setInterval(() => {
+                const elapsed = Date.now() - appState.miningStartTime;
+                const progress = Math.min(elapsed / miningDuration, 1);
+                const earned = progress * totalReward;
+                
+                // Update progress bar
+                progressBar.style.width = (progress * 100) + '%';
+                
+                // Update timer display
+                const remaining = miningDuration - elapsed;
+                if (remaining > 0) {
+                    const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+                    const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                    const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+                    
+                    document.getElementById('miningTimer').textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    progressText.textContent = `${earned.toFixed(6)} / 5.000000 USDT`;
+                } else {
+                    // Mining completed
+                    clearInterval(miningInterval);
+                    appState.isMining = false;
+                    appState.balance += (totalReward - appState.currentMiningEarned);
+                    appState.dailyEarnings += (totalReward - appState.currentMiningEarned);
+                    appState.totalEarnings += (totalReward - appState.currentMiningEarned);
+                    appState.currentMiningEarned = totalReward;
+                    
+                    miningCircle.classList.remove('spinning');
+                    miningStatus.textContent = 'Mining Completed!';
+                    progressBar.style.width = '100%';
+                    progressText.textContent = '5.000000 / 5.000000 USDT - Completed!';
+                    earningRate.textContent = '';
+                    
+                    showNotification('🎉 Mining completed! +5.000000 USDT earned!');
+                    updateUI();
+                    saveState();
+                    return;
+                }
+                
+                // Update balance gradually
+                const currentEarned = Math.floor(earned * 1000000) / 1000000; // 6 decimal precision
+                if (currentEarned > appState.currentMiningEarned) {
+                    const increment = currentEarned - appState.currentMiningEarned;
+                    appState.balance += increment;
+                    appState.dailyEarnings += increment;
+                    appState.totalEarnings += increment;
+                    appState.currentMiningEarned = currentEarned;
+                    updateUI();
+                }
+                
+                saveState();
+            }, 1000);
+            
+            saveState();
+        }
+
+        // Load saved state
+        function loadState() {
+            const saved = localStorage.getItem('finomax_state');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                appState = { ...appState, ...savedState };
+                updateUI();
+            }
+        }
+
+        // Save state
+        function saveState() {
+            localStorage.setItem('finomax_state', JSON.stringify(appState));
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('balance').textContent = appState.balance.toFixed(6);
+            document.getElementById('walletBalance').textContent = appState.balance.toFixed(6) + ' USDT';
+            document.getElementById('dailyEarnings').textContent = '+' + appState.dailyEarnings.toFixed(6);
+            document.getElementById('totalEarnings').textContent = appState.totalEarnings.toFixed(6);
+            
+            // Update referral stats
+            document.getElementById('totalReferrals').textContent = appState.referrals.total;
+            document.getElementById('referralEarnings').textContent = appState.referrals.earnings.toFixed(2);
+            
+            // Generate referral link
+            const userId = Math.random().toString(36).substr(2, 9);
+            document.getElementById('referralLink').textContent = `https://finomax.com/ref/${userId}`;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Crypto Market Data
+        let cryptoMarketData = [
+            { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', price: 43250.67, change: 2.45, rank: 1, marketCap: '847.0B', volume: '28.5B', supply: '19.6M BTC', icon: '₿' },
+            { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', price: 2580.34, change: -1.23, rank: 2, marketCap: '310.2B', volume: '15.2B', supply: '120.4M ETH', icon: 'Ξ' },
+            { id: 'tether', name: 'Tether', symbol: 'USDT', price: 1.00, change: 0.01, rank: 3, marketCap: '91.5B', volume: '45.8B', supply: '91.5B USDT', icon: '₮' },
+            { id: 'bnb', name: 'BNB', symbol: 'BNB', price: 315.67, change: 3.21, rank: 4, marketCap: '47.2B', volume: '1.8B', supply: '149.5M BNB', icon: 'B' },
+            { id: 'solana', name: 'Solana', symbol: 'SOL', price: 98.45, change: 5.67, rank: 5, marketCap: '42.8B', volume: '2.1B', supply: '434.7M SOL', icon: 'S' },
+            { id: 'xrp', name: 'XRP', symbol: 'XRP', price: 0.6234, change: -2.15, rank: 6, marketCap: '33.9B', volume: '1.2B', supply: '54.4B XRP', icon: 'X' },
+            { id: 'cardano', name: 'Cardano', symbol: 'ADA', price: 0.4567, change: 1.89, rank: 7, marketCap: '16.1B', volume: '890M', supply: '35.3B ADA', icon: 'A' },
+            { id: 'dogecoin', name: 'Dogecoin', symbol: 'DOGE', price: 0.0823, change: 4.32, rank: 8, marketCap: '11.7B', volume: '650M', supply: '142.1B DOGE', icon: 'D' }
+        ];
+
+        // Real-time crypto price fetching
+        async function fetchRealTimeCryptoPrices() {
+            try {
+                // Using CoinGecko API as a reliable alternative to CoinMarketCap
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch crypto data');
+                }
+                
+                const data = await response.json();
+                
+                // Update our crypto data with real prices
+                const cryptoMap = {
+                    'bitcoin': { icon: '₿', supply: '19.6M BTC' },
+                    'ethereum': { icon: 'Ξ', supply: '120.4M ETH' },
+                    'tether': { icon: '₮', supply: '91.5B USDT' },
+                    'binancecoin': { icon: 'B', supply: '149.5M BNB', name: 'BNB', symbol: 'BNB' },
+                    'solana': { icon: 'S', supply: '434.7M SOL' },
+                    'ripple': { icon: 'X', supply: '54.4B XRP', name: 'XRP', symbol: 'XRP' },
+                    'cardano': { icon: 'A', supply: '35.3B ADA' },
+                    'dogecoin': { icon: 'D', supply: '142.1B DOGE' }
+                };
+                
+                cryptoMarketData = data.slice(0, 8).map((coin, index) => {
+                    const cryptoInfo = cryptoMap[coin.id] || { icon: coin.symbol.charAt(0).toUpperCase(), supply: 'N/A' };
+                    
+                    return {
+                        id: coin.id,
+                        name: cryptoInfo.name || coin.name,
+                        symbol: cryptoInfo.symbol || coin.symbol.toUpperCase(),
+                        price: coin.current_price,
+                        change: coin.price_change_percentage_24h || 0,
+                        rank: coin.market_cap_rank || (index + 1),
+                        marketCap: formatLargeNumber(coin.market_cap),
+                        volume: formatLargeNumber(coin.total_volume),
+                        supply: cryptoInfo.supply,
+                        icon: cryptoInfo.icon
+                    };
+                });
+                
+                // Update total market stats
+                const totalMarketCap = data.reduce((sum, coin) => sum + (coin.market_cap || 0), 0);
+                const totalVolume = data.reduce((sum, coin) => sum + (coin.total_volume || 0), 0);
+                
+                document.getElementById('totalMarketCap').textContent = '$' + formatLargeNumber(totalMarketCap);
+                document.getElementById('total24hVolume').textContent = '$' + formatLargeNumber(totalVolume);
+                
+                // Update the crypto list if market page is active
+                if (appState.currentPage === 'market') {
+                    updateCryptoList();
+                }
+                
+                console.log('✅ Crypto prices updated successfully');
+                
+            } catch (error) {
+                console.error('❌ Error fetching crypto prices:', error);
+                // Keep using cached data if API fails
+            }
+        }
+
+        // Format large numbers (e.g., 1234567890 -> "1.23B")
+        function formatLargeNumber(num) {
+            if (!num) return '0';
+            
+            if (num >= 1e12) {
+                return (num / 1e12).toFixed(2) + 'T';
+            } else if (num >= 1e9) {
+                return (num / 1e9).toFixed(1) + 'B';
+            } else if (num >= 1e6) {
+                return (num / 1e6).toFixed(1) + 'M';
+            } else if (num >= 1e3) {
+                return (num / 1e3).toFixed(1) + 'K';
+            } else {
+                return num.toFixed(0);
+            }
+        }
+
+        // Game functions
+        function playLuckyWheel() {
+            const betAmount = appState.selectedBetAmount;
+            if (appState.balance < betAmount) {
+                showNotification(translate('insufficient_funds'), 'error');
+                return;
+            }
+
+            const wheel = document.querySelector('.lucky-wheel');
+            const prizes = [0.5, 0.1, 0.2, 0.05, 0.3, 0.15];
+            const randomIndex = Math.floor(Math.random() * prizes.length);
+            const rotation = 360 * 5 + (randomIndex * 60);
+            
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            appState.balance -= betAmount;
+            
+            setTimeout(() => {
+                const prize = prizes[randomIndex] * betAmount;
+                appState.balance += prize;
+                appState.dailyEarnings += (prize - betAmount);
+                appState.totalEarnings += (prize - betAmount);
+                
+                if (prize > betAmount) {
+                    showNotification(`${translate('you_won')} +${(prize - betAmount).toFixed(6)} USDT`);
+                } else {
+                    showNotification(`${translate('you_lost')} -${(betAmount - prize).toFixed(6)} USDT`);
+                }
+                
+                updateUI();
+                saveState();
+            }, 3000);
+        }
+
+        function playSlotMachine() {
+            const betAmount = appState.selectedBetAmount;
+            if (appState.balance < betAmount) {
+                showNotification(translate('insufficient_funds'), 'error');
+                return;
+            }
+
+            const reels = document.querySelectorAll('.slot-reel');
+            const symbols = ['🍒', '🍋', '🍊', '🍇', '⭐', '💎'];
+            const results = [];
+            
+            appState.balance -= betAmount;
+            
+            reels.forEach((reel, index) => {
+                const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                results.push(symbol);
+                
+                setTimeout(() => {
+                    reel.textContent = symbol;
+                }, index * 500);
+            });
+            
+            setTimeout(() => {
+                let prize = 0;
+                if (results[0] === results[1] && results[1] === results[2]) {
+                    if (results[0] === '💎') prize = betAmount * 10;
+                    else if (results[0] === '⭐') prize = betAmount * 5;
+                    else prize = betAmount * 3;
+                } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+                    prize = betAmount * 1.5;
+                }
+                
+                appState.balance += prize;
+                appState.dailyEarnings += (prize - betAmount);
+                appState.totalEarnings += (prize - betAmount);
+                
+                if (prize > betAmount) {
+                    showNotification(`${translate('you_won')} +${(prize - betAmount).toFixed(6)} USDT`);
+                } else {
+                    showNotification(`${translate('you_lost')} -${betAmount.toFixed(6)} USDT`);
+                }
+                
+                updateUI();
+                saveState();
+            }, 2000);
+        }
+
+        function playDiceGame() {
+            const betAmount = appState.selectedBetAmount;
+            if (appState.balance < betAmount) {
+                showNotification(translate('insufficient_funds'), 'error');
+                return;
+            }
+
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            
+            appState.balance -= betAmount;
+            
+            const result1 = Math.floor(Math.random() * 6) + 1;
+            const result2 = Math.floor(Math.random() * 6) + 1;
+            const total = result1 + result2;
+            
+            dice1.textContent = result1;
+            dice2.textContent = result2;
+            
+            let prize = 0;
+            if (total === 7 || total === 11) {
+                prize = betAmount * 3;
+            } else if (total >= 8) {
+                prize = betAmount * 2;
+            } else if (total >= 6) {
+                prize = betAmount * 1.5;
+            }
+            
+            appState.balance += prize;
+            appState.dailyEarnings += (prize - betAmount);
+            appState.totalEarnings += (prize - betAmount);
+            
+            if (prize > betAmount) {
+                showNotification(`${translate('you_won')} +${(prize - betAmount).toFixed(6)} USDT`);
+            } else {
+                showNotification(`${translate('you_lost')} -${betAmount.toFixed(6)} USDT`);
+            }
+            
+            updateUI();
+            saveState();
+        }
+
+        function playCoinFlip(choice) {
+            const betAmount = appState.selectedBetAmount;
+            if (appState.balance < betAmount) {
+                showNotification(translate('insufficient_funds'), 'error');
+                return;
+            }
+
+            const coin = document.querySelector('.coin');
+            coin.classList.add('flipping');
+            
+            appState.balance -= betAmount;
+            
+            setTimeout(() => {
+                const result = Math.random() < 0.5 ? 'heads' : 'tails';
+                coin.textContent = result === 'heads' ? translate('heads') : translate('tails');
+                coin.classList.remove('flipping');
+                
+                let prize = 0;
+                if (choice === result) {
+                    prize = betAmount * 2;
+                }
+                
+                appState.balance += prize;
+                appState.dailyEarnings += (prize - betAmount);
+                appState.totalEarnings += (prize - betAmount);
+                
+                if (prize > betAmount) {
+                    showNotification(`${translate('you_won')} +${(prize - betAmount).toFixed(6)} USDT`);
+                } else {
+                    showNotification(`${translate('you_lost')} -${betAmount.toFixed(6)} USDT`);
+                }
+                
+                updateUI();
+                saveState();
+            }, 1000);
+        }
+
+        function playRoulette() {
+            const betAmount = appState.selectedBetAmount;
+            if (appState.balance < betAmount) {
+                showNotification(translate('insufficient_funds'), 'error');
+                return;
+            }
+
+            const wheel = document.querySelector('.roulette-wheel');
+            const randomNumber = Math.floor(Math.random() * 37); // 0-36
+            const rotation = 360 * 5 + (randomNumber * 9.73); // 360/37 ≈ 9.73
+            
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            appState.balance -= betAmount;
+            
+            setTimeout(() => {
+                let prize = 0;
+                if (randomNumber === 0) {
+                    prize = betAmount * 35; // Green 0
+                } else if (randomNumber % 2 === 0) {
+                    prize = betAmount * 2; // Even numbers
+                } else {
+                    prize = betAmount * 1.8; // Odd numbers
+                }
+                
+                appState.balance += prize;
+                appState.dailyEarnings += (prize - betAmount);
+                appState.totalEarnings += (prize - betAmount);
+                
+                if (prize > betAmount) {
+                    showNotification(`${translate('you_won')} +${(prize - betAmount).toFixed(6)} USDT`);
+                } else {
+                    showNotification(`${translate('you_lost')} -${betAmount.toFixed(6)} USDT`);
+                }
+                
+                updateUI();
+                saveState();
+            }, 3000);
+        }
+
+        // Task functions
+        function completeTask(taskId, type = 'daily') {
+            const task = appState.tasks[type].find(t => t.id === taskId);
+            if (!task || task.completed) return;
+            
+            task.completed = true;
+            appState.balance += task.reward;
+            appState.dailyEarnings += task.reward;
+            appState.totalEarnings += task.reward;
+            
+            showNotification(translate('task_completed'));
+            updateUI();
+            updateTasksUI();
+            saveState();
+        }
+
+        function updateTasksUI() {
+            const dailyContainer = document.getElementById('dailyTasksList');
+            const weeklyContainer = document.getElementById('weeklyTasksList');
+            
+            // Daily tasks
+            dailyContainer.innerHTML = '';
+            appState.tasks.daily.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'glass-effect rounded-xl p-4 flex items-center justify-between';
+                
+                let progressText = '';
+                if (task.target) {
+                    progressText = ` (${task.progress}/${task.target})`;
+                }
+                
+                taskElement.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-2xl">${task.completed ? '✅' : '⏳'}</div>
+                        <div>
+                            <h4 class="font-bold">${translate(task.name)}${progressText}</h4>
+                            <p class="text-sm text-gray-400">+${task.reward.toFixed(2)} USDT</p>
+                        </div>
+                    </div>
+                    <button onclick="completeTask('${task.id}')" 
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-bold transition-all ${task.completed ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${task.completed ? 'disabled' : ''}>
+                        ${task.completed ? translate('completed') : translate('claim')}
+                    </button>
+                `;
+                dailyContainer.appendChild(taskElement);
+            });
+            
+            // Weekly tasks
+            weeklyContainer.innerHTML = '';
+            appState.tasks.weekly.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'glass-effect rounded-xl p-4 flex items-center justify-between';
+                
+                taskElement.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-2xl">${task.completed ? '✅' : '⏳'}</div>
+                        <div>
+                            <h4 class="font-bold">${translate(task.name)}</h4>
+                            <p class="text-sm text-gray-400">+${task.reward.toFixed(2)} USDT</p>
+                        </div>
+                    </div>
+                    <button onclick="completeTask('${task.id}', 'weekly')" 
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-bold transition-all ${task.completed ? 'opacity-50 cursor-not-allowed' : ''}"
+                            ${task.completed ? 'disabled' : ''}>
+                        ${task.completed ? translate('completed') : translate('claim')}
+                    </button>
+                `;
+                weeklyContainer.appendChild(taskElement);
+            });
+        }
+
+        // Market functions
+        function updateCryptoList() {
+            const cryptoList = document.getElementById('cryptoList');
+            
+            // If list is empty, create it
+            if (cryptoList.children.length === 0) {
+                cryptoMarketData.forEach(crypto => {
+                    const cryptoElement = document.createElement('div');
+                    cryptoElement.className = 'glass-effect rounded-xl p-4 crypto-item cursor-pointer';
+                    cryptoElement.id = `crypto-${crypto.id}`;
+                    cryptoElement.onclick = () => showCryptoDetail(crypto);
+                    
+                    cryptoElement.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    ${crypto.icon}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">${crypto.name}</h4>
+                                    <p class="text-sm text-gray-400">${crypto.symbol}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold price-value">$${typeof crypto.price === 'number' ? crypto.price.toLocaleString() : crypto.price}</div>
+                                <div class="text-sm price-change ${crypto.change >= 0 ? 'price-up' : 'price-down'}">
+                                    ${crypto.change >= 0 ? '+' : ''}${crypto.change.toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    cryptoList.appendChild(cryptoElement);
+                });
+            } else {
+                // Update existing elements with animation
+                cryptoMarketData.forEach(crypto => {
+                    const element = document.getElementById(`crypto-${crypto.id}`);
+                    if (element) {
+                        const priceElement = element.querySelector('.price-value');
+                        const changeElement = element.querySelector('.price-change');
+                        
+                        if (priceElement) {
+                            const newPrice = typeof crypto.price === 'number' ? crypto.price.toLocaleString() : crypto.price;
+                            if (priceElement.textContent !== `$${newPrice}`) {
+                                priceElement.style.transform = 'scale(1.1)';
+                                priceElement.style.color = crypto.change >= 0 ? '#10b981' : '#ef4444';
+                                priceElement.textContent = `$${newPrice}`;
+                                
+                                setTimeout(() => {
+                                    priceElement.style.transform = 'scale(1)';
+                                    priceElement.style.color = '';
+                                }, 500);
+                            }
+                        }
+                        
+                        if (changeElement) {
+                            changeElement.textContent = `${crypto.change >= 0 ? '+' : ''}${crypto.change.toFixed(2)}%`;
+                            changeElement.className = `text-sm price-change ${crypto.change >= 0 ? 'price-up' : 'price-down'}`;
+                        }
+                    }
+                });
+            }
+        }
+
+        function showCryptoDetail(crypto) {
+            document.getElementById('modalCoinIcon').textContent = crypto.icon;
+            document.getElementById('modalCoinName').textContent = crypto.name;
+            document.getElementById('modalCoinSymbol').textContent = crypto.symbol;
+            document.getElementById('modalCoinPrice').textContent = `$${crypto.price.toLocaleString()}`;
+            document.getElementById('modalCoinChange').textContent = `${crypto.change >= 0 ? '+' : ''}${crypto.change.toFixed(2)}%`;
+            document.getElementById('modalCoinChange').className = crypto.change >= 0 ? 'text-lg price-up' : 'text-lg price-down';
+            document.getElementById('modalCoinRank').textContent = `#${crypto.rank}`;
+            document.getElementById('modalCoinMarketCap').textContent = `$${crypto.marketCap}`;
+            document.getElementById('modalCoinVolume').textContent = `$${crypto.volume}`;
+            document.getElementById('modalCoinSupply').textContent = crypto.supply;
+            
+            document.getElementById('cryptoDetailModal').classList.remove('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('miningCircle').addEventListener('click', startMining);
+
+        // Language selector
+        document.getElementById('languageSelector').addEventListener('change', (e) => {
+            currentLanguage = e.target.value;
+            updateTranslations();
+            updateTasksUI();
+            updateCryptoList();
+            saveState();
+        });
+
+        // Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId + 'Page').classList.remove('hidden');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(pageId + 'NavBtn').classList.add('active');
+            
+            appState.currentPage = pageId;
+            
+            // Initialize page-specific content
+            if (pageId === 'market') {
+                updateCryptoList();
+            } else if (pageId === 'tasks') {
+                updateTasksUI();
+            } else if (pageId === 'games') {
+                initializeGamesPage();
+            }
+            
+            saveState();
+        }
+
+        function initializeGamesPage() {
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.innerHTML = `
+                <p class="text-center text-white/70" data-translate="select_game">${translate('select_game')}</p>
+            `;
+        }
+
+        function showGameInterface(gameType) {
+            const gameContainer = document.getElementById('gameContainer');
+            
+            switch(gameType) {
+                case 'wheel':
+                    gameContainer.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4" data-translate="lucky_wheel">${translate('lucky_wheel')}</h3>
+                            <div class="wheel-container">
+                                <div class="wheel-pointer"></div>
+                                <div class="lucky-wheel">
+                                    <div class="wheel-segment segment-1">0.5x</div>
+                                    <div class="wheel-segment segment-2">0.1x</div>
+                                    <div class="wheel-segment segment-3">0.2x</div>
+                                    <div class="wheel-segment segment-4">0.05x</div>
+                                    <div class="wheel-segment segment-5">0.3x</div>
+                                    <div class="wheel-segment segment-6">0.15x</div>
+                                </div>
+                            </div>
+                            <div class="bet-buttons">
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.01 ? 'selected' : ''}" onclick="selectBetAmount(0.01)">0.01 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.05 ? 'selected' : ''}" onclick="selectBetAmount(0.05)">0.05 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.1 ? 'selected' : ''}" onclick="selectBetAmount(0.1)">0.1 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.5 ? 'selected' : ''}" onclick="selectBetAmount(0.5)">0.5 USDT</button>
+                            </div>
+                            <button onclick="playLuckyWheel()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                ${translate('spin')}
+                            </button>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'slots':
+                    gameContainer.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4" data-translate="slot_machine">${translate('slot_machine')}</h3>
+                            <div class="slot-machine">
+                                <div class="slot-reel">🍒</div>
+                                <div class="slot-reel">🍋</div>
+                                <div class="slot-reel">🍊</div>
+                            </div>
+                            <div class="bet-buttons">
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.01 ? 'selected' : ''}" onclick="selectBetAmount(0.01)">0.01 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.05 ? 'selected' : ''}" onclick="selectBetAmount(0.05)">0.05 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.1 ? 'selected' : ''}" onclick="selectBetAmount(0.1)">0.1 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.5 ? 'selected' : ''}" onclick="selectBetAmount(0.5)">0.5 USDT</button>
+                            </div>
+                            <button onclick="playSlotMachine()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                ${translate('spin')}
+                            </button>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'dice':
+                    gameContainer.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4" data-translate="dice_game">${translate('dice_game')}</h3>
+                            <div class="flex justify-center gap-4 mb-4">
+                                <div class="dice-face" id="dice1">1</div>
+                                <div class="dice-face" id="dice2">1</div>
+                            </div>
+                            <div class="bet-buttons">
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.01 ? 'selected' : ''}" onclick="selectBetAmount(0.01)">0.01 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.05 ? 'selected' : ''}" onclick="selectBetAmount(0.05)">0.05 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.1 ? 'selected' : ''}" onclick="selectBetAmount(0.1)">0.1 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.5 ? 'selected' : ''}" onclick="selectBetAmount(0.5)">0.5 USDT</button>
+                            </div>
+                            <button onclick="playDiceGame()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                ${translate('roll_dice')}
+                            </button>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'coin':
+                    gameContainer.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4" data-translate="coin_flip">${translate('coin_flip')}</h3>
+                            <div class="coin">${translate('heads')}</div>
+                            <div class="bet-buttons">
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.01 ? 'selected' : ''}" onclick="selectBetAmount(0.01)">0.01 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.05 ? 'selected' : ''}" onclick="selectBetAmount(0.05)">0.05 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.1 ? 'selected' : ''}" onclick="selectBetAmount(0.1)">0.1 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.5 ? 'selected' : ''}" onclick="selectBetAmount(0.5)">0.5 USDT</button>
+                            </div>
+                            <div class="flex gap-4 justify-center">
+                                <button onclick="playCoinFlip('heads')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                    ${translate('heads')}
+                                </button>
+                                <button onclick="playCoinFlip('tails')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                    ${translate('tails')}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'roulette':
+                    gameContainer.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4" data-translate="roulette">${translate('roulette')}</h3>
+                            <div class="roulette-container">
+                                <div class="roulette-pointer"></div>
+                                <div class="roulette-wheel"></div>
+                            </div>
+                            <div class="bet-buttons">
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.01 ? 'selected' : ''}" onclick="selectBetAmount(0.01)">0.01 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.05 ? 'selected' : ''}" onclick="selectBetAmount(0.05)">0.05 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.1 ? 'selected' : ''}" onclick="selectBetAmount(0.1)">0.1 USDT</button>
+                                <button class="bet-btn ${appState.selectedBetAmount === 0.5 ? 'selected' : ''}" onclick="selectBetAmount(0.5)">0.5 USDT</button>
+                            </div>
+                            <button onclick="playRoulette()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all">
+                                ${translate('spin')}
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function selectBetAmount(amount) {
+            appState.selectedBetAmount = amount;
+            document.querySelectorAll('.bet-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            saveState();
+        }
+
+        // Copy functions
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(translate('copied'));
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification(translate('copied'));
+            });
+        }
+
+        // Wallet functions
+        function processWithdrawal() {
+            const address = document.getElementById('withdrawAddress').value;
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            
+            if (!address || address.length < 10) {
+                showNotification(translate('invalid_address'), 'error');
+                return;
+            }
+            
+            if (!amount || amount < 15 || amount > appState.balance) {
+                showNotification(translate('invalid_amount'), 'error');
+                return;
+            }
+            
+            appState.balance -= amount;
+            updateUI();
+            saveState();
+            
+            document.getElementById('withdrawAddress').value = '';
+            document.getElementById('withdrawAmount').value = '';
+            
+            showNotification(translate('withdrawal_requested'));
+        }
+
+        // Initialize app
+        function initializeApp() {
+            loadState();
+            updateTranslations();
+            updateUI();
+            updateTasksUI();
+            updateCryptoList();
+            
+            // Set default language if not set
+            if (!currentLanguage) {
+                currentLanguage = 'en';
+                document.getElementById('languageSelector').value = 'en';
+            }
+            
+            // Complete daily login task automatically
+            const loginTask = appState.tasks.daily.find(t => t.id === 'login');
+            if (loginTask && !loginTask.completed) {
+                setTimeout(() => {
+                    completeTask('login');
+                }, 1000);
+            }
+        }
+
+        // Navigation event listeners
+        document.getElementById('homeNavBtn').addEventListener('click', () => showPage('main'));
+        document.getElementById('marketNavBtn').addEventListener('click', () => showPage('market'));
+        document.getElementById('walletNavBtn').addEventListener('click', () => showPage('wallet'));
+        document.getElementById('tasksNavBtn').addEventListener('click', () => showPage('tasks'));
+        document.getElementById('gamesNavBtn').addEventListener('click', () => showPage('games'));
+        document.getElementById('referralNavBtn').addEventListener('click', () => showPage('referral'));
+
+        // Quick action buttons
+        document.getElementById('walletBtn').addEventListener('click', () => showPage('wallet'));
+        document.getElementById('gamesBtn').addEventListener('click', () => showPage('games'));
+        document.getElementById('marketBtn').addEventListener('click', () => showPage('market'));
+
+        // Game buttons
+        document.getElementById('wheelGameBtn').addEventListener('click', () => showGameInterface('wheel'));
+        document.getElementById('slotsGameBtn').addEventListener('click', () => showGameInterface('slots'));
+        document.getElementById('diceGameBtn').addEventListener('click', () => showGameInterface('dice'));
+        document.getElementById('coinFlipGameBtn').addEventListener('click', () => showGameInterface('coin'));
+        document.getElementById('rouletteGameBtn').addEventListener('click', () => showGameInterface('roulette'));
+
+        // Wallet buttons
+        document.getElementById('copyAddressBtn').addEventListener('click', () => {
+            copyToClipboard(document.getElementById('depositAddress').textContent);
+            showNotification(translate('address_copied'));
+        });
+
+        document.getElementById('withdrawBtn').addEventListener('click', processWithdrawal);
+
+        // Referral button
+        document.getElementById('copyReferralBtn').addEventListener('click', () => {
+            copyToClipboard(document.getElementById('referralLink').textContent);
+            showNotification(translate('link_copied'));
+        });
+
+        // Market buttons
+        document.getElementById('refreshMarketBtn').addEventListener('click', async () => {
+            document.getElementById('refreshMarketBtn').innerHTML = '🔄 <span data-translate="loading">' + translate('loading') + '</span>';
+            await fetchRealTimeCryptoPrices();
+            document.getElementById('refreshMarketBtn').innerHTML = '🔄 <span data-translate="refresh">' + translate('refresh') + '</span>';
+            showNotification('Market data refreshed!');
+        });
+
+        // Modal close button
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('cryptoDetailModal').classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('cryptoDetailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'cryptoDetailModal') {
+                document.getElementById('cryptoDetailModal').classList.add('hidden');
+            }
+        });
+
+        // Search functionality
+        document.getElementById('cryptoSearch').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = cryptoMarketData.filter(crypto => 
+                crypto.name.toLowerCase().includes(searchTerm) || 
+                crypto.symbol.toLowerCase().includes(searchTerm)
+            );
+            
+            const cryptoList = document.getElementById('cryptoList');
+            cryptoList.innerHTML = '';
+            
+            filteredData.forEach(crypto => {
+                const cryptoElement = document.createElement('div');
+                cryptoElement.className = 'glass-effect rounded-xl p-4 crypto-item cursor-pointer';
+                cryptoElement.onclick = () => showCryptoDetail(crypto);
+                
+                cryptoElement.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                ${crypto.icon}
+                            </div>
+                            <div>
+                                <h4 class="font-bold">${crypto.name}</h4>
+                                <p class="text-sm text-gray-400">${crypto.symbol}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold">$${crypto.price.toLocaleString()}</div>
+                            <div class="text-sm ${crypto.change >= 0 ? 'price-up' : 'price-down'}">
+                                ${crypto.change >= 0 ? '+' : ''}${crypto.change.toFixed(2)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cryptoList.appendChild(cryptoElement);
+            });
+        });
+
+        // Make functions global for onclick handlers
+        window.completeTask = completeTask;
+        window.selectBetAmount = selectBetAmount;
+        window.playLuckyWheel = playLuckyWheel;
+        window.playSlotMachine = playSlotMachine;
+        window.playDiceGame = playDiceGame;
+        window.playCoinFlip = playCoinFlip;
+        window.playRoulette = playRoulette;
+        window.showCryptoDetail = showCryptoDetail;
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp();
+            // Fetch real-time prices on startup
+            fetchRealTimeCryptoPrices();
+        });
+
+        // Auto-save state every 30 seconds
+        setInterval(saveState, 30000);
+
+        // Auto-update crypto prices every 30 seconds
+        setInterval(fetchRealTimeCryptoPrices, 30000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98566727f07bdc50',t:'MTc1ODkyNzg5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
