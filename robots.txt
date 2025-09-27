@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://YOUR-USERNAME.github.io/finomax-miniapp/sitemap.xml
+
+# اجازه دسترسی به فایل‌های مهم
+Allow: /index.html
+Allow: /telegram.js
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.svg
+
+# منع دسترسی به فایل‌های حساس
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /node_modules/
+
+# تنظیمات برای موتورهای جستجو
+Crawl-delay: 1
