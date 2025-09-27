@@ -2885,5 +2885,50 @@
         // Auto-update crypto prices every 30 seconds
         setInterval(fetchRealTimeCryptoPrices, 30000);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98566727f07bdc50',t:'MTc1ODkyNzg5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98566727f07bdc50',t:'MTc1ODkyNzg5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script> <!-- Custom Scripts -->
+<script src="./telegram.js"></script>
+<script src="./analytics.js"></script>
+<script src="./monitoring.js"></script>
+
+<!-- Google Analytics (اختیاری) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GA_MEASUREMENT_ID');
+  
+  // ردیابی رویدادهای مخصوص
+  function trackEvent(action, category, label) {
+    gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      value: 1
+    });
+  }
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'985da483473a5d78',t:'MTc1OTAwMzgwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script> </body>
+<!-- Telegram Web App Script -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="./manifest.json">
+
+<!-- Meta Tags for SEO -->
+<meta name="description" content="FinoMax - Smart Investment Platform for Telegram. Mine USDT, play games, and earn rewards!">
+<meta name="keywords" content="telegram, miniapp, investment, mining, games, USDT, cryptocurrency">
+<meta name="author" content="FinoMax Team">
+
+<!-- Open Graph Tags -->
+<meta property="og:title" content="FinoMax - Smart Investment Platform">
+<meta property="og:description" content="Mine USDT, play games, and earn rewards in this Telegram mini app">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://YOUR-USERNAME.github.io/finomax-miniapp">
+<meta property="og:image" content="https://YOUR-USERNAME.github.io/finomax-miniapp/logo.png">
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinoMax - Smart Investment Platform">
+<meta name="twitter:description" content="Mine USDT, play games, and earn rewards">
+<meta name="twitter:image" content="https://YOUR-USERNAME.github.io/finomax-miniapp/logo.png">
 </html>
