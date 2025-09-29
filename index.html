@@ -2071,8 +2071,18 @@
             document.getElementById('referralEarnings').textContent = appState.referrals.earnings.toFixed(2);
             
             // Generate referral link
-            const userId = Math.random().toString(36).substr(2, 9);
-            document.getElementById('referralLink').textContent = `https://finomax.com/ref/${userId}`;
+            function getPersistentUserId() {
+              let userId = localStorage.getItem('userId');
+              if (!userId) {
+                userId = Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+              }
+              return userId;
+            }
+
+            const userId = getPersistentUserId();
+            console.log('User ID:', userId);
+            document.getElementById('referralLink').textContent = `https://t.me/finomax_bot/ref/${userId}`;
         }
 
         // Show notification
